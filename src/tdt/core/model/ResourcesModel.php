@@ -196,7 +196,7 @@ class ResourcesModel {
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
             throw new TDTException(452, array("Resource type doesn't exist. Choose from generic,remote or installed"), $exception_config);
         }
-            // get the documentation containing information about the required parameters
+            // get the documentation containing information about the required parameters        
         $doc = $this->getAllAdminDoc();
 
         /**
@@ -463,7 +463,7 @@ class ResourcesModel {
 
         foreach ($this->factories as $factory) {
             if ($factory->hasResource($package, $resource)) {
-                $reader = $factory->createReader($package, $resource, $parameters, $RESTparameters);
+                $reader = $factory->createReader($package, $resource, $parameters, $RESTparameters);               
                 return $reader->execute();
             }
         }
@@ -615,8 +615,8 @@ class ResourcesModel {
         return $doc->visitAllDescriptions($this->factories);
     }
 
-    public function getAllAdminDoc() {
-        $doc = new Doc();
+    public function getAllAdminDoc() {        
+        $doc = new Doc();        
         return $doc->visitAllAdmin($this->factories);
     }
 
@@ -633,7 +633,7 @@ class ResourcesModel {
      * the piece after it found the package will be the resourcename ( if any pieces left ofcourse )
      * the pieces after the resourcename are the RESTparameters
      * @return array First entry is the [packagename], second entry is the [resourcename], third is the array with [RESTparameters]
-      If the package hasn't been found FALSE is returned!
+     * If the package hasn't been found FALSE is returned!
      */
       public function processPackageResourceString($packageresourcestring) {
 

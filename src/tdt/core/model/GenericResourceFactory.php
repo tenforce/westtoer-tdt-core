@@ -23,6 +23,8 @@ use tdt\core\utility\Config;
 
 class GenericResourceFactory extends AResourceFactory {
 
+    private $non_patch_properties = array("resource_type", "generic_type", );
+
     public function __construct() {
     }
 
@@ -159,48 +161,102 @@ class GenericResourceFactory extends AResourceFactory {
         return $resources;
     }
 
-    public function makeDeleteDoc($doc) {
-        //add stuff to the delete attribute in doc. No other parameters expected
-        $d = new \stdClass();
-        if (!isset($doc->delete)) {
-            $doc->delete = new \stdClass();
+    /**
+     * Create the PUT method documentation.
+     */ 
+    public function createPUTDocumentation($strategy) {
+        
+        $put = new \stdClass();
+
+        $strategy_name = strtolower($strategy);
+        $put->id = "generic.$strategy_name.put";
+        $put->httpMethod = "PUT";
+        $put->description = "Create a resource definition that allows the extraction of data from a $strategy_name based data structure.";
+        $put->parameters = new \stdClass();
+
+        $creator = new GenericResourceCreator("", "", array(), $strategy);            
+        $parameters = $creator->documentParameters();
+        $req_parameters = $creator->documentRequiredParameters();
+
+        foreach($parameters as $parameter => $documentation){
+            $param_class = new \stdClass();
+            $param_class->description = $documentation;
+            $param_class->required = in_array($parameter, $req_parameters);
+
+            $put->parameters->$parameter = $param_class;
         }
-        $d->documentation = "You can delete every generic resource by sending a DELETE HTTP request to the resource definition located in TDTAdmin/Resources.";
-        $doc->delete->generic = new \stdClass();
-        $doc->delete->generic = $d;
+        
+        return $put;
     }
 
-    public function makeCreateDoc($doc) {
-        $d = array();
-        foreach ($this->getAllStrategies() as $strategy) {
-            $res = new GenericResourceCreator("", "", array(), $strategy);
-            $d[$strategy] = new \stdClass();
-            $d[$strategy]->documentation = "When your file is structured according to a $strategy -datasource, you can perform a PUT request and load this file in this DataTank";
-            $d[$strategy]->parameters = $res->documentParameters();
-            $d[$strategy]->requiredparameters = $res->documentRequiredParameters();
-        }
-        if (!isset($doc->create)) {
-            $doc->create = new \stdClass();
-        }
-        $doc->create->generic = new \stdClass();
-        $doc->create->generic = $d;
+    /**
+     * Create the DELETE method documentation.
+     */ 
+    public function createDELETEDocumentation($strategy) {
+        
+        $delete = new \stdClass();
+
+        $strategy_name = strtolower($strategy);
+        $delete->id = "generic.$strategy_name.delete";
+        $delete->httpMethod = "DELETE";
+        $delete->description = "Delete a resource definition removing it permanently.";
+        $delete->parameters = new \stdClass();        
+        
+        return $delete;
     }
 
-    public function makeUpdateDoc($doc) {
-        $d = array();
-        foreach ($this->getAllStrategies() as $strategy) {
-            $res = new GenericResourceUpdater("", "", array(), $strategy);
-            $d[$strategy] = new \stdClass();
-            $d[$strategy]->documentation = "When your generic resource is made you can update properties of it by passing the property names via a PATCH request to TDTAdmin/Resources. Note that only create parameters are adjustable.";
-            $d[$strategy]->parameters = array();
-            $d[$strategy]->requiredparameters = array();
-        }
-        if (!isset($doc->update)) {
-            $doc->update = new \stdClass();
-        }
-        $doc->update->generic = new \stdClass();
-        $doc->update->generic = $d;
+    /**
+     * Create the PATCH method documentation.
+     */ 
+    public function createPATCHDocumentation($strategy) {
+        
+        $patch = new \stdClass();
+
+        $strategy_name = strtolower($strategy);
+        $patch->id = "generic.$strategy_name.patch";
+        $patch->httpMethod = "PATCH";
+        $patch->description = "PATCH a resource definition .";
+        $patch->parameters = new \stdClass();   
+
+        $creator = new GenericResourceCreator("", "", array(), $strategy);            
+        $parameters = $creator->documentParameters();
+        $req_parameters = $creator->documentRequiredParameters();
+
+        // Only allow patcheable parameters for certain parameters are not patcheable. (e.g. resource_type)
+        foreach($parameters as $parameter => $documentation){
+            if(in_array($parameter, $this->non_patch_properties)){
+                $param_class = new \stdClass();
+                $param_class->description = $documentation;            
+
+                $patch->parameters->$parameter = $param_class;
+            }        
+        }     
+        
+        return $patch;
     }
+
+    /**
+     * Create the API documentation of generic resources, structure is based on the
+     * google discovery API reference.
+     */ 
+    public function createAPIDoc($doc){        
+
+        $doc->generic = new \stdClass();
+        $resources = new \stdClass();
+
+        foreach($this->getAllStrategies() as $strategy){
+            $name = strtolower($strategy);
+            $resources->$name = new \stdClass();
+
+            // Document PUT method
+            $resources->$name->put = $this->createPUTDocumentation($strategy);
+            $resources->$name->delete = $this->createDELETEDocumentation($strategy);
+            $resources->$name->patch = $this->createPATCHDocumentation($strategy);
+        }
+        
+        $doc->generic->resources = $resources;
+    }
+
 
     private function getAllStrategies() {
         $strategies = array();
@@ -222,5 +278,3 @@ class GenericResourceFactory extends AResourceFactory {
     }
 
 }
-
-?>

@@ -75,22 +75,22 @@ abstract class AResourceFactory {
      * Visitor pattern function
      * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
      */
-    abstract public function makeDeleteDoc($doc);
+    //abstract public function makeDeleteDoc($doc);
 
     /**
      * Visitor pattern function
      * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
      */
-    abstract public function makeCreateDoc($doc);
+    //abstract public function makeCreateDoc($doc);
 
     /**
      * Visitor pattern function
      * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
      */
-    public function makeUpdateDoc($doc) {
+/*    public function makeUpdateDoc($doc) {
         
+    }*/
+    public function createAPIDocumentation($doc){
     }
 
 }
-
-?>

@@ -16,7 +16,7 @@ use tdt\core\utility\Config;
 use tdt\core\model\resources\read\AReader;
 
 
-class TDTAdminDocreset extends AReader{
+class Docreset extends AReader{
 
     public static function getParameters() {
         return array();

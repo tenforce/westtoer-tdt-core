@@ -36,7 +36,6 @@ class Doc {
      */
     private function prepareCacheConfig() {
         $cache_config = array();
-
         $cache_config["system"] = Config::get("general", "cache", "system");
         $cache_config["host"] = Config::get("general", "cache", "host");
         $cache_config["port"] = Config::get("general", "cache", "port");
@@ -111,15 +110,25 @@ class Doc {
     public function visitAllAdmin($factories) {
         $c = Cache::getInstance($this->prepareCacheConfig());
         $doc = $c->get($this->hostname . $this->subdir . "admindocumentation");
-        if (is_null($doc)) {
-            $doc = new \stdClass();
+        if (true){//is_null($doc)) { TODO
+
+            $doc->protocol = "rest";
+            $doc->uri = new \stdClass();
+            $doc->uri->template = "{uri}/tdtadmin/resources/{package}*/{resource}";
+            $doc->uri->template_vars = new \stdClass();
+            $doc->uri->template_vars->uri = "Your base uri on which your datatank is accessible.";
+            $doc->uri->template_vars->package = "A package is a group name under which other packages or a resource can be put. This means that packages can exist under other packages.";
+            $doc->uri->template_vars->resource = "A resource is a name that serves as a last identifier of the uri under which the data content will be published.";
+
+            $resources = new \stdClass();                    
             foreach ($factories as $factory) {
-                $factory->makeDeleteDoc($doc);
-                $factory->makeCreateDoc($doc);
-                $factory->makeUpdateDoc($doc);
-            }
+                $factory->createAPIDoc($resources);
+                break;
+            }                       
+            
             $c->set($this->hostname . $this->subdir . "admindocumentation", $doc, 60 * 60 * 60); // cache it for 1 hour by default
-        }
+        }   
+        $doc->resources = $resources;     
         return $doc;
     }
 
