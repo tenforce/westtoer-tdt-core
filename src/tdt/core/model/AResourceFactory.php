@@ -11,7 +11,7 @@
 
 namespace tdt\core\model;
 
-abstract class AResourceFactory {
+abstract class AResourceFactory {    
 
     /**
      * Quickly check if this factory has a specific resource
@@ -93,4 +93,9 @@ abstract class AResourceFactory {
     public function createAPIDocumentation($doc){
     }
 
+    /**
+     * Creates a RDF/XML string of DCAT datasets.
+     */ 
+    public function createDCATDocumentation(){
+    }
 }

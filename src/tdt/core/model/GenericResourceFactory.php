@@ -277,4 +277,22 @@ class GenericResourceFactory extends AResourceFactory {
         return $strategies;
     }
 
+    public function createDCATDocumentation(){
+
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<dcat:Dataset rdf:about=\"$access_uri\">";
+                $rdf_string .= "<dct:description>" . $documentation["doc"] . "</dct:description>";
+                $rdf_string .= "<dcat:distribution><dcat:Distribution><dcat:accessURL>" . $access_uri . "</dcat:accessURL></dcat:Distribution></dcat:distribution>";                                
+                $rdf_string .= "</dcat:Dataset>";
+            }
+        }
+
+        return $rdf_string;
+    }
 }

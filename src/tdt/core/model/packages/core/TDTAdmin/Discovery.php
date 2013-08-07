@@ -34,6 +34,7 @@ class Discovery extends AReader {
     public function read() {        
         $resmod = ResourcesModel::getInstance(Config::getConfigArray());
         $result_object = $resmod->getAllAdminDoc();
+        
         foreach($this->RESTparameters as $param){
             if (is_object($result_object) && $this->isPropertySet($result_object,$param)) {
                 $param = $this->isPropertySet($result_object,$param);

@@ -610,6 +610,11 @@ class ResourcesModel {
         return $doc->visitAll($this->factories);
     }
 
+    public function getDCATDocumentation(){
+        $doc = new Doc();
+        return $doc->getDCATDocumentation($this->factories);
+    }
+
     public function getAllDescriptionDoc() {
         $doc = new Doc();
         return $doc->visitAllDescriptions($this->factories);

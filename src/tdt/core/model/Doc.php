@@ -26,6 +26,23 @@ class Doc {
     private $hostname;
     private $subdir;
 
+    private $dcat = array(
+        "catalog"       => "dcat:Catalog",
+        "dataset"       => "dcat:Dataset",
+        "title"         => "dct:title",
+        "description"   => "dct:description",
+        "identifier"    => "dct:identifier",
+    );
+
+    private $dcat_namespaces = array(
+        "dcat" => "http://www.w3.org/ns/dcat#",
+        "dct"  => "http://purl.org/dc/terms/",
+        "rdf"  => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
+        "owl"  => "http://www.w3.org/2002/07/owl#",
+    );
+
+
     public function __construct() {
         $this->hostname = Config::get("general", "hostname");
         $this->subdir = Config::get("general", "subdir");
@@ -130,6 +147,39 @@ class Doc {
         }   
         $doc->resources = $resources;     
         return $doc;
+    }
+
+    /**
+     * Visits all of the factories to request the documentation in a ARC2 graph object
+     * using DCAT and DC vocabulary.
+     */ 
+    public function getDCATDocumentation($factories){
+
+        $c = Cache::getInstance($this->prepareCacheConfig());
+        $parser = $c->get($this->hostname . $this->subdir . "dcatdocumentation");
+        if (is_null($parser)) {            
+
+            // Prepare the rdf xml root
+            $rdf_string = "<rdf:RDF ";
+            foreach($this->dcat_namespaces as $prefix => $ns){
+                $rdf_string .= "xmlns:$prefix=\"$ns\" ";
+            }
+            $rdf_string .= ">";
+            $rdf_string .= "<dcat:Catalog>
+                                <dct:description>The declared datasets provide meta-data about datasets from which the contents have been automatically published to the web. For more information visit thedatatank.com.
+                                </dct:description>";
+            // The factories will create an RDF/XML string.
+            foreach ($factories as $factory) {
+                $rdf_string .= $factory->createDCATDocumentation();              
+            }
+            $rdf_string .= "</dct:Catalog></rdf:RDF>";
+
+            $parser = \ARC2::getRDFParser();            
+            $parser->parse('', $rdf_string);
+            $c->set($this->hostname . $this->subdir . "dcatdocumentation", $parser, 60 * 60 * 60); // cache it for 1 hour by default
+        }
+
+        return $parser;
     }
 
     /**
