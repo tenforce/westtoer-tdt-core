@@ -26,14 +26,6 @@ class Doc {
     private $hostname;
     private $subdir;
 
-    private $dcat = array(
-        "catalog"       => "dcat:Catalog",
-        "dataset"       => "dcat:Dataset",
-        "title"         => "dct:title",
-        "description"   => "dct:description",
-        "identifier"    => "dct:identifier",
-    );
-
     private $dcat_namespaces = array(
         "dcat" => "http://www.w3.org/ns/dcat#",
         "dct"  => "http://purl.org/dc/terms/",
@@ -159,23 +151,38 @@ class Doc {
         $parser = $c->get($this->hostname . $this->subdir . "dcatdocumentation");
         if (is_null($parser)) {            
 
-            // Prepare the rdf xml root
-            $rdf_string = "<rdf:RDF ";
+            $rdf_string = "";
             foreach($this->dcat_namespaces as $prefix => $ns){
-                $rdf_string .= "xmlns:$prefix=\"$ns\" ";
+                $rdf_string .= "@prefix $prefix: <$ns>";
             }
-            $rdf_string .= ">";
-            $rdf_string .= "<dcat:Catalog>
-                                <dct:description>The declared datasets provide meta-data about datasets from which the contents have been automatically published to the web. For more information visit thedatatank.com.
-                                </dct:description>";
-            // The factories will create an RDF/XML string.
+
+            // Get all of the resource identifiers, these have to be linked for they
+            // will be listed as part of the catalog.
+            $identifier_list = "";
+            $doc = get_object_vars($this->visitAll($factories));
+            foreach($doc as $package => $resource_object){
+                $resource = get_object_vars($resource_object);
+                reset($resource);
+                $resource_name = key($resource);
+                $identifier_list .= "<" . $this->hostname . $this->subdir . $package . "/" . $resource_name . ">, ";
+
+            }
+
+            $identifier_list = rtrim($identifier_list, ", ");            
+
+            $rdf_string .= '<dcat:catalog>                        
+                                a dcat:Catalog;
+                                dct:title "Datatank DCAT catalog";
+                                dct:description "This is a datatank catalog providing DCAT vocabulary based information about its published datasources." ;
+                                dcat:dataset ' . $identifier_list . ' .';                                
+           
+            // The factories will create triples in turtle syntax
             foreach ($factories as $factory) {
                 $rdf_string .= $factory->createDCATDocumentation();              
-            }
-            $rdf_string .= "</dct:Catalog></rdf:RDF>";
+            }            
 
-            $parser = \ARC2::getRDFParser();            
-            $parser->parse('', $rdf_string);
+            $parser = \ARC2::getTurtleParser();            
+            $parser->parse('', $rdf_string);            
             $c->set($this->hostname . $this->subdir . "dcatdocumentation", $parser, 60 * 60 * 60); // cache it for 1 hour by default
         }
 

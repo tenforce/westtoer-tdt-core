@@ -286,10 +286,9 @@ class GenericResourceFactory extends AResourceFactory {
                 $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
                 $identifier = $package . "/" . $resourcename;
                 $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
-                $rdf_string .= "<dcat:Dataset rdf:about=\"$access_uri\">";
-                $rdf_string .= "<dct:description>" . $documentation["doc"] . "</dct:description>";
-                $rdf_string .= "<dcat:distribution><dcat:Distribution><dcat:accessURL>" . $access_uri . "</dcat:accessURL></dcat:Distribution></dcat:distribution>";                                
-                $rdf_string .= "</dcat:Dataset>";
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
             }
         }
 

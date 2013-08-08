@@ -16,6 +16,7 @@ use tdt\core\model\DBQueries;
 use tdt\core\model\resources\create\InstalledResourceCreator;
 use tdt\core\model\resources\delete\InstalledResourceDeleter;
 use tdt\exceptions\TDTException;
+use tdt\core\utility\Config;
 
 class InstalledResourceFactory extends AResourceFactory {
 
@@ -189,6 +190,22 @@ class InstalledResourceFactory extends AResourceFactory {
         $doc->create->installed = $d;
     }
 
-}
+    public function createDCATDocumentation(){
 
-?>
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+            }
+        }
+
+        return $rdf_string;
+    }
+
+}

@@ -12,6 +12,8 @@
 
 namespace tdt\core\model;
 
+use tdt\core\utility\Config;
+
 class CoreResourceFactory extends AResourceFactory {
 
     private $directory;
@@ -113,6 +115,24 @@ class CoreResourceFactory extends AResourceFactory {
             array_push($packages, $package);
         }
         return $packages;
+    }
+
+    public function createDCATDocumentation(){
+
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+            }
+        }
+
+        return $rdf_string;
     }
 
 }
