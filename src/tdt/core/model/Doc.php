@@ -174,8 +174,22 @@ class Doc {
             }
             $rdf_string .= "</dct:Catalog></rdf:RDF>";
 
+
+
+
+            $rdf_string = '@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct:<http://purl.org/dc/terms/> .
+@prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:<http://www.w3.org/2002/07/owl#> .
+dcat:catalog a dcat:Catalog. 
+dcat:dataset a dcat:Dataset; 
+dcat:distribution dcat:dataset-002. ';
+
             $parser = \ARC2::getRDFParser();            
             $parser->parse('', $rdf_string);
+            /*var_dump($parser);
+            exit();*/
             $c->set($this->hostname . $this->subdir . "dcatdocumentation", $parser, 60 * 60 * 60); // cache it for 1 hour by default
         }
 
