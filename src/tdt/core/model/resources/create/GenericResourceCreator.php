@@ -43,26 +43,11 @@ class GenericResourceCreator extends ACreator {
      * This overrides the previous defined required parameters by ACreator. It needs $strategy to be an instance of a strategy. Therefor setParameter needs to have been called upon with a generic_type as argument.
      */
     public function documentParameters() {
-        $parameters = parent::documentParameters();
-        $parameters["generic_type"] = array( 
-            "documentation" => "The type of the generic resource.",
-            "required" => true,
-        );
+        $parameters = parent::documentParameters();        
 
         $parameters = array_merge($parameters, $this->strategy->documentCreateParameters());
         return $parameters;
-    }
-
-    /**
-     * This overrides the previous defined required parameters by ACreator. It needs $strategy to be an instance of a strategy. Therefor setParameter needs to have been called upon with a generic_type as argument.
-     */
-    public function documentRequiredParameters() {
-        /*$parameters = parent::documentRequiredParameters();
-        $parameters[] = "documentation";
-        $parameters[] = "generic_type";
-        $parameters = array_merge($parameters, $this->strategy->documentCreateRequiredParameters());
-        return $parameters;*/
-    }
+    }   
 
     public function setParameter($key, $value) {
         // set the correct parameters, to the this class or the strategy we're sure that every key,value passed is correct
@@ -78,6 +63,7 @@ class GenericResourceCreator extends ACreator {
      * parameters have already been set.
      */
     public function create() {
+        
         R::setStrictTyping(false);
         /*
          * Create the package and resource entities and create a generic resource entry.

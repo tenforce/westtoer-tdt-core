@@ -21,9 +21,7 @@ use tdt\core\model\resources\update\GenericResourceUpdater;
 use tdt\exceptions\TDTException;
 use tdt\core\utility\Config;
 
-class GenericResourceFactory extends AResourceFactory {
-
-    private $non_patch_properties = array("resource_type", "generic_type", );
+class GenericResourceFactory extends AResourceFactory {    
 
     public function __construct() {
     }
@@ -164,30 +162,20 @@ class GenericResourceFactory extends AResourceFactory {
     /**
      * Create the PUT method documentation.
      */ 
-    public function createPUTDocumentation($strategy) {
-        
-        $put = new \stdClass();
+    public function createPUTDocumentation($doc) {        
 
-        $strategy_name = strtolower($strategy);
-        //$put->id = "generic.$strategy_name.put";
-        $put->httpMethod = "PUT";
-        $put->description = "Create a resource definition that allows the extraction of data from a $strategy_name based data structure.";
-        $put->parameters = new \stdClass();
+        foreach($this->getAllStrategies() as $strategy){
 
-        $creator = new GenericResourceCreator("", "", array(), $strategy);            
-        $put->parameters = $creator->documentParameters();
-        /*$parameters = $creator->documentParameters();
-        //$req_parameters = $creator->documentRequiredParameters();
+            $strategy_name = strtolower($strategy);            
+            $media_type = "application/$strategy_name";
+            $doc->$media_type = new \stdClass();
+            
+            $doc->$media_type->description = "Create a definition that allows the publication of data from a $strategy_name based data structure.";
+            $doc->$media_type->parameters = new \stdClass();
 
-        foreach($parameters as $parameter => $documentation){
-            $param_class = new \stdClass();
-            $param_class->description = $documentation;
-            //$param_class->required = in_array($parameter, $req_parameters);
-
-            $put->parameters->$parameter = $param_class;
-        }*/
-        
-        return $put;
+            $creator = new GenericResourceCreator("", "", array(), $strategy);            
+            $doc->$media_type->parameters = $creator->documentParameters();
+        }
     }
 
     /**
@@ -222,15 +210,13 @@ class GenericResourceFactory extends AResourceFactory {
         $creator = new GenericResourceCreator("", "", array(), $strategy);            
         $parameters = $creator->documentParameters();
         $req_parameters = $creator->documentRequiredParameters();
+        
+        foreach($parameters as $parameter => $documentation){           
+            $param_class = new \stdClass();
+            $param_class->description = $documentation;            
 
-        // Only allow patcheable parameters for certain parameters are not patcheable. (e.g. resource_type)
-        foreach($parameters as $parameter => $documentation){
-            if(in_array($parameter, $this->non_patch_properties)){
-                $param_class = new \stdClass();
-                $param_class->description = $documentation;            
-
-                $patch->parameters->$parameter = $param_class;
-            }        
+            $patch->parameters->$parameter = $param_class;
+            
         }     
         
         return $patch;
@@ -254,7 +240,7 @@ class GenericResourceFactory extends AResourceFactory {
             $name = strtolower($strategy);
             $resources->$name = new \stdClass();
         
-            $resources->$name->put = $this->createPUTDocumentation($strategy);
+            $resources->$name-> $this->createcumentation($strategy);
             $resources->$name->delete = $this->createDELETEDocumentation($strategy);
             //$resources->$name->patch = $this->createPATCHDocumentation($strategy);
         }        

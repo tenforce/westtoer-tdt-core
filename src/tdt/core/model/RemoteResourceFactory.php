@@ -104,14 +104,14 @@ class RemoteResourceFactory extends AResourceFactory {
         return $d;
     }
 
-    public function createPUTDocumentation() {
-        //add stuff to create attribute in doc. No other parameters expected
-        $d = new \stdClass();
-        $d->description = "Creates a new remote resource by executing a HTTP PUT on an URL formatted like " . Config::get("general", "hostname") . Config::get("general", "subdir") . "packagename/newresource. The base_uri needs to point to another The DataTank instance.";
-        $resource = new RemoteResourceCreator("", "", array()); //make an empty object. In the end we only need a remote resource
-        $d->parameters = $resource->documentParameters();
-        
-        return $d;
+    public function createPUTDocumentation($doc){
+
+        $media_type = "application/remote";
+        $doc->$media_type = new \stdClass();
+
+        $remote_resource = new RemoteResourceCreator("", "", array()); 
+        $doc->$media_type->description = "Creates a new remote resource by executing a HTTP PUT on an URL formatted like " . Config::get("general", "hostname") . Config::get("general", "subdir") . "packagename/newresource. The base_uri needs to point to another The DataTank instance.";        
+        $doc->$media_type->parameters = $remote_resource->documentParameters();           
     }
 
     /*
@@ -121,7 +121,6 @@ class RemoteResourceFactory extends AResourceFactory {
      * every single call to this factory. If we receive a call
      * for another resource, we replace it by the newly asked factory.
      */
-
     private function fetchResourceDocumentation($package, $resource) {
         $result = DBQueries::getRemoteResource($package, $resource);
         if (sizeof($result) == 0) {

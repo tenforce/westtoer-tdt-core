@@ -172,16 +172,15 @@ class InstalledResourceFactory extends AResourceFactory {
     /**
      * Put together the creation documentation for installed resources
      */
-    public function createPUTDocumentation() {
+    public function createPUTDocumentation($doc) {    
+                    
+        $media_type = "application/installed";
+        $doc->$media_type = new \stdClass();
 
-        $d = new \stdClass();
         $installedResource = new InstalledResourceCreator("", "", array());
-        $d->description = "You can publish an installed resource when you have created a resource-class in the installed folder.";
-        $d->httpMethod = "PUT";        
-        $d->parameters = $installedResource->documentParameters();       
-
-        return $d;
-    }
+        $doc->$media_type->description = "You can publish an installed resource when you have created a resource-class in the installed folder.";        
+        $doc->$media_type->parameters = $installedResource->documentParameters();                   
+   }
 
 
     /**

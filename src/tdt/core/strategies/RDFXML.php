@@ -96,15 +96,7 @@ class RDFXML extends AResourceStrategy {
         }
 
         return true;
-    }
-
-    /**
-     * The parameters returned are required to make this strategy work.
-     * @return array with parameter => documentation pairs
-     */
-    public function documentCreateRequiredParameters() {
-        return array("uri");
-    }
+    }   
 
     public function documentReadRequiredParameters() {
         return array();
@@ -116,9 +108,21 @@ class RDFXML extends AResourceStrategy {
 
     public function documentCreateParameters() {
         return array(
-            "uri" => "The URI of the RDF/XML file.",
-            "endpoint_user" => "Username for file behind authentication",
-            "endpoint_password" => "Password for file behind authentication"
+            "uri" => array(
+                "description" => "The URI of the RDF/XML file.",
+                "required" => true,
+            ),
+
+            "endpoint_user" => array(
+                "description" => "Username for file behind authentication",
+                "required" => true,
+            ),
+
+            "endpoint_password" => array(
+                "description" => "Password for file behind authentication",
+                "required" => true,
+            ),
+
         );
     }
 

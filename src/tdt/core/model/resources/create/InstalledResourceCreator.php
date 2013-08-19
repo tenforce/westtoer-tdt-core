@@ -34,13 +34,15 @@ class InstalledResourceCreator extends ACreator {
         $parameters = parent::documentParameters();
 
         $parameters["location"] = array(
-            "documentation" => "The location, relative to the custom/packages folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.",
+            "description" => "The location, relative to the model/packages/installed folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.",
             "required" => true,
         );
+
         $parameters["classname"] = array(
-            "documentation" => "The name of the class i.e. myinstalledresource.",
+            "description" => "The name of the class i.e. myinstalledresource.",
             "required" => true,
         );
+
         return $parameters;
     }   
 
@@ -54,11 +56,10 @@ class InstalledResourceCreator extends ACreator {
      * Preconditions:
      * parameters have already been set.
      */
-    public function create() {
-        /*
-         * Create the package and resource entities and create a generic resource entry.
-         * Then pick the correct strategy, and pass along the parameters!
-         */
+    public function create(){
+
+        // Create the package and resource entities and create a generic resource entry.
+        // Then pick the correct strategy, and pass along the parameters!
         // check if the location is legit        
         if (file_exists($this->directory . $this->location)) {            
             include_once($this->directory . $this->location);
@@ -82,5 +83,4 @@ class InstalledResourceCreator extends ACreator {
             throw new TDTException(452, array("The classname $this->classname doesn't exist on location installed/$this->location"), $exception_config);
         }
     }
-
 }

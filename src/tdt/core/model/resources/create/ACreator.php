@@ -36,13 +36,7 @@ abstract class ACreator {
      * @return hash with key = parameter name and value = documentation about the parameter
      */
     public function documentParameters() {
-        $createParameters = array(
-                "resource_type" => array(
-                    "documentation" => "The type of the resource. i.e. generic, installed,remote",
-                    "required" => true,
-                ),
-        );
-        return array_merge($createParameters, $this->documentMetaDataParameters());
+        return $this->documentMetaDataParameters();
     }
 
     public function documentMetaDataParameters() {
@@ -61,15 +55,7 @@ abstract class ACreator {
             "rights_holder" => "A person or organization owning or managing rights over the resource.",
             "example_uri" => "An example of how a call to the resource may look like."*/
         );
-    }
-
-    /**
-     * get the required parameters
-     * @return array with all of the required parameters
-     */
-    public function documentRequiredParameters() {
-        return array("resource_type");
-    }
+    }   
 
     /**
      * make package id

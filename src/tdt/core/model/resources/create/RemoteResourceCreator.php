@@ -27,21 +27,22 @@ class RemoteResourceCreator extends ACreator {
      * It first calls upon the parent. Then it extends the parent required parameters with base_url and package_name
      */
     public function documentParameters() {
+
         $parameters = parent::documentParameters();
         $parameters["base_url"] = array(
-            "documenatation" => "The base url from the remote resource.",
+            "description" => "The base url from the remote resource.",
             "required" => true,
-            );
+        );
 
         $parameters["package_name"] = array(
-            "documenatation" => "The remote package name of the remote resource.",
+            "description" => "The remote package name of the remote resource.",
             "required" => true,
-            );
+        );
 
         $parameters["resource_name"] = array(
-            "documenatation" => "The remote resource name of the remote resource. Default value is the local resource_name.",
+            "description" => "The remote resource name of the remote resource. Default value is the local resource_name.",
             "required" => true,
-            );
+        );
 
         return $parameters;
     }

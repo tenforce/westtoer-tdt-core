@@ -100,7 +100,7 @@ class CoreResourceFactory extends AResourceFactory {
         $doc->delete->core = $d;
     }
 
-    public function createAPIDoc($doc){
+    public function createPUTDocumentation($doc){
         
     }
 

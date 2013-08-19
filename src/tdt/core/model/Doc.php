@@ -114,24 +114,42 @@ class Doc {
 
     /**
      * Visits all the factories in order to get the admin documentation, which elaborates on the admin functionality
-     * @return $mixed  An object which holds the documentation on how to perform admin functions such as creation, deletion and updates.
+     * @return $mixed An object which holds the documentation on how to perform admin functions such as creation, deletion and updates.
      */
     public function visitAllAdmin($factories) {
         $c = Cache::getInstance($this->prepareCacheConfig());
         $doc = $c->get($this->hostname . $this->subdir . "admindocumentation");
         if (is_null($doc)) {
 
+            $doc = new \stdClass();
             $doc->protocol = "rest";
-            $doc->definitionsUrl = "tdtadmin/resources/";
-            $doc->baseUrl = $this->hostname . $this->subdir . "";
-                             
-            foreach ($factories as $factory) {
-                $factory->createAPIDoc($doc);
+            $doc->servicePath = "/discovery/";
+            $doc->rootUrl = $this->hostname . $this->subdir . "";
+            $doc->resources = new \stdClass();
 
-            }                       
+            // The definition section of the discovery document.
+            $doc->resources->definitions = new \stdClass();
+            $doc->resources->definitions->methods = new \stdClass();
+            $doc->resources->definitions->methods->put = new \stdClass();
+            $doc->resources->definitions->methods->put->httpMethod = "PUT";
+
+            $doc->resources->definitions->methods->put->mediaType = new \stdClass();
+            foreach ($factories as $factory) {
+                $factory->createPUTDocumentation($doc->resources->definitions->methods->put->mediaType);
+            }
+
+            // The info section of the discovery document.
+            $doc->resources->info = new \stdClass();
+            $doc->resources->info->resources = new \stdClass();
+            $doc->resources->info->resources->datasets = new \stdClass();
+            $doc->resources->info->resources->datasets->methods = new \stdClass();
+            $doc->resources->info->resources->datasets->methods->get = new \stdClass();
+            $doc->resources->info->resources->datasets->methods->get->httpMethod = "GET";
+            $doc->resources->info->resources->datasets->methods->get->description = "Retrieve information about the available datasets.";
             
-            $c->set($this->hostname . $this->subdir . "admindocumentation", $doc, 60 * 60 * 60); // cache it for 1 hour by default
+            $c->set($this->hostname . $this->subdir . "admindocumentation", $doc, 60 * 60 * 60); // Cache it for 1 hour by default
         }           
+
         return $doc;
     }
 
