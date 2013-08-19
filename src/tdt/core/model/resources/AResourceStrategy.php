@@ -27,7 +27,7 @@ abstract class AResourceStrategy {
     protected $link_referrals = array("last","previous","next");
 
     /**
-     * This functions contains the businesslogic of a read method (non paged reading)
+     * This functions contains the businesslogic of a read method
      * @return \stdClass object representing the result of the businesslogic.
      */
     abstract public function read(&$configObject, $package, $resource);

@@ -27,7 +27,7 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
         $configArray = array("general" => array("hostname" => "", "subdir" => "", "defaultformat" => "json",
             "cache" => array("system" => "NoCache","host"=>"", "port"=>"")),
         "db" => array("system" => "mysql", "host"=>"localhost","user"=>"root", "password" => "", "name" => "coretest"),
-        "logging" => array("enabled" => false, "path" => ""));
+        "logging" => array("enabled" => false, "path" => "C:\\wamp\\wwww\\logs"));
 
         Config::setConfig($configArray);
 
@@ -72,10 +72,13 @@ class JSONTest extends \PHPUnit_Framework_TestCase {
             $model->createResource($TEST_PACKAGE_NAME . "/" . $TEST_RESOURCE_NAME,$parameters);
         }catch(Exception $ex){
             echo $ex->getMessage();
+            ob_flush();
+            die();
             $create_resource = false;
         }
 
         $this->assertTrue($create_resource);
+
 
         /*
          * Try reading the datasource
