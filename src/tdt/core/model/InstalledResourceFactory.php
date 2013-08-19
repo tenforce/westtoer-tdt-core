@@ -162,32 +162,48 @@ class InstalledResourceFactory extends AResourceFactory {
     /**
      * Put together the deletion documentation for installed resources
      */
-    public function makeDeleteDoc($doc) {
+    public function createDELETEDocumentation() {
         $d = new \stdClass();
-        $d->doc = "Installed resources can be deleted by sending a DELETE HTTP request to the resource definition located in TDTAdmin/Resources. The physical file however will remain existant, but no longer published.";
-        if (!isset($doc->delete)) {
-            $doc->delete = new \stdClass();
-        }
-        $doc->delete->installed = new \stdClass();
-        $doc->delete->installed = $d;
+        $d->description = "Delete an installed source type definition, the physical file however will remain present.";
+        $d->httpMethod = "DELETE";
+        return $d;
     }
 
     /**
      * Put together the creation documentation for installed resources
      */
-    public function makeCreateDoc($doc) {
+    public function createPUTDocumentation() {
 
         $d = new \stdClass();
         $installedResource = new InstalledResourceCreator("", "", array());
-        $d->doc = "You can PUT an installed resource when you have created a resource-class in the installed folder.";
-        $d->parameters = $installedResource->documentParameters();
-        $d->requiredparameters = $installedResource->documentRequiredParameters();
+        $d->description = "You can publish an installed resource when you have created a resource-class in the installed folder.";
+        $d->httpMethod = "PUT";        
+        $d->parameters = $installedResource->documentParameters();       
 
-        if (!isset($doc->create)) {
-            $doc->create = new \stdClass();
-        }
-        $doc->create->installed = new \stdClass();
-        $doc->create->installed = $d;
+        return $d;
+    }
+
+
+    /**
+     * Create the API documentation of generic resources, structure is based on the
+     * google discovery API reference.
+     */ 
+    public function createAPIDoc($doc){
+
+        $resources = new \stdClass();
+
+        if(!empty($doc->resources)){
+            $resources = $doc->resources;
+        }else{
+            $doc->resources = $resources;
+        }    
+
+        $resources->installed = new \stdClass();
+
+        $resources->installed->put = $this->createPUTDocumentation();
+        $resources->installed->delete = $this->createDELETEDocumentation();
+
+        $doc->resources = $resources;
     }
 
     public function createDCATDocumentation(){

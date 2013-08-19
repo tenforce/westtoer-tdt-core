@@ -98,15 +98,7 @@ abstract class AResourceStrategy {
 
     public function setRestParameters($rest_params = array()){
         $this->rest_params = $rest_params;
-    }
-
-    /**
-     * Gets all the required parameters to add a resource with this strategy
-     * @return array with the required parameters to add a resource with this strategy
-     */
-    public function documentCreateRequiredParameters() {
-        return array();
-    }
+    }    
 
     public function documentReadRequiredParameters() {
         return array();

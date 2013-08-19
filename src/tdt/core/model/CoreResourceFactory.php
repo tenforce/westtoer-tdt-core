@@ -100,12 +100,8 @@ class CoreResourceFactory extends AResourceFactory {
         $doc->delete->core = $d;
     }
 
-    public function makeCreateDoc($doc) {
-        //we cannot create Core Resources
-    }
-
-    public function makeUpdateDoc($doc) {
-        // we cannot update Core Resources
+    public function createAPIDoc($doc){
+        
     }
 
     public function getAllPackagesDoc() {
