@@ -158,67 +158,27 @@ class ResourcesModel {
         $RESTparameters = array();
 
 
-        //if it doesn't, test whether the resource_type has been set
-        if (!isset($parameters["resource_type"])) {
+        //if it doesn't, test whether the source_type has been set
+        if (!isset($parameters["source_type"])) {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array("Parameter resource_type hasn't been set"), $exception_config);
-        }
+            throw new TDTException(452, array("Parameter source_type hasn't been set"), $exception_config);
+        }        
 
-        /**
-         * adding some semantics to the resource_type parameter
-         * generic/generic_type should be parsed as generic being the resource_type and generic_type as the
-         * generic type, without passing that as a separate parameter
-         * NOTE that passing generic/generic_type has priority over generic_type = ...
-         */
-        $resourceTypeParts = explode("/", $parameters["resource_type"]);
-        if ($resourceTypeParts[0] != "remote" && $resourceTypeParts[0] != "installed") {
-            if ($resourceTypeParts[0] == "generic" && !isset($parameters["generic_type"])
-                && isset($resourceTypeParts[1])) {
-                $parameters["generic_type"] = $resourceTypeParts[1];
-                $parameters["resource_type"] = $resourceTypeParts[0];
-            } else if (!isset($parameters["generic_type"])) {
-                $exception_config = array();
-                $exception_config["log_dir"] = Config::get("general", "logging", "path");
-                $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-                throw new TDTException(452, array("Parameter generic_type hasn't been set, or the combination generic/generic_type hasn't been properly passed. A template-example: generic/CSV"), $exception_config);
-            }
-        }
+        $source_type = $parameters["source_type"];
+        $source_type = strtolower($source_type);
+         
+        $doc = $this->getDiscoveryDoc();
 
-
-        $restype = $parameters["resource_type"];
-        $restype = strtolower($restype);
-            //now check if the file exist and include it
-        if (!in_array($restype, array("generic", "remote", "installed"))) {
+        if(empty($doc->resources->$source_type)){
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array("Resource type doesn't exist. Choose from generic,remote or installed"), $exception_config);
-        }
-            // get the documentation containing information about the required parameters        
-        $doc = $this->getAllAdminDoc();
-
-        /**
-         * get the correct requiredparameters list to check
-         */
-        $resourceCreationDoc;
-        if ($restype == "generic") {
-            /*
-             * Issue: keys of an array cannot be gotten without an exact match, csv != CSV is an example
-             * of a result of this matter, this however should be ==
-             * Solution : fetch all the keys, compare them strtoupper ( or lower, matter of taste ) , then replace
-             * generic_type with the "correct" one
-             */
-
-            $parameters["generic_type"] = $this->formatGenericType($parameters["generic_type"], $doc->create->generic);
-            $resourceCreationDoc = $doc->create->generic[$parameters["generic_type"]];
-        } elseif ($restype == "remote") {
-            $resourceCreationDoc = $doc->create->remote;
-        } elseif ($restype == "installed") {
-            $resourceCreationDoc = $doc->create->installed;
+            throw new TDTException(452, array("The given source_type $source_type doesn't exist. Take a look at the discovery document to identify the possible source types."), $exception_config);
         }
 
+        $source_type = $doc->resources->$source_type;
 
         /**
          * Check if all required parameters are being passed
@@ -244,7 +204,7 @@ class ResourcesModel {
 
 
         // all is well, let's create that resource!
-        $creator = $this->factories[$restype]->createCreator($package, $resource, $parameters, $RESTparameters);
+        $creator = $this->factories[$source_type]->createCreator($package, $resource, $parameters, $RESTparameters);
         try {
             //first check if there resource exists yet
             if ($this->hasResource($package, $resource)) {
@@ -620,7 +580,7 @@ class ResourcesModel {
         return $doc->visitAllDescriptions($this->factories);
     }
 
-    public function getAllAdminDoc() {        
+    public function getDiscoveryDoc() {        
         $doc = new Doc();        
         return $doc->visitAllAdmin($this->factories);
     }
@@ -656,7 +616,7 @@ class ResourcesModel {
         $model = ResourcesModel::getInstance(Config::getConfigArray());
         $doc = $model->getAllDoc();
         $foundPackage = FALSE;
-        //var_dump($doc);
+        
         /**
          * Since we do not know where the package/resource/requiredparameters end, we're going to build the package string
          * and check if it exists, if so we have our packagestring. Why is this always correct ? Take a look at the

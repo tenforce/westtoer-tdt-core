@@ -169,22 +169,23 @@ class GenericResourceFactory extends AResourceFactory {
         $put = new \stdClass();
 
         $strategy_name = strtolower($strategy);
-        $put->id = "generic.$strategy_name.put";
+        //$put->id = "generic.$strategy_name.put";
         $put->httpMethod = "PUT";
         $put->description = "Create a resource definition that allows the extraction of data from a $strategy_name based data structure.";
         $put->parameters = new \stdClass();
 
         $creator = new GenericResourceCreator("", "", array(), $strategy);            
-        $parameters = $creator->documentParameters();
-        $req_parameters = $creator->documentRequiredParameters();
+        $put->parameters = $creator->documentParameters();
+        /*$parameters = $creator->documentParameters();
+        //$req_parameters = $creator->documentRequiredParameters();
 
         foreach($parameters as $parameter => $documentation){
             $param_class = new \stdClass();
             $param_class->description = $documentation;
-            $param_class->required = in_array($parameter, $req_parameters);
+            //$param_class->required = in_array($parameter, $req_parameters);
 
             $put->parameters->$parameter = $param_class;
-        }
+        }*/
         
         return $put;
     }
@@ -240,21 +241,23 @@ class GenericResourceFactory extends AResourceFactory {
      * google discovery API reference.
      */ 
     public function createAPIDoc($doc){        
-
-        $doc->generic = new \stdClass();
+        
         $resources = new \stdClass();
+
+        if(!empty($doc->resources)){
+            $resources = $doc->resources;
+        }else{
+            $doc->resources = $resources;
+        }        
 
         foreach($this->getAllStrategies() as $strategy){
             $name = strtolower($strategy);
             $resources->$name = new \stdClass();
-
-            // Document PUT method
+        
             $resources->$name->put = $this->createPUTDocumentation($strategy);
             $resources->$name->delete = $this->createDELETEDocumentation($strategy);
-            $resources->$name->patch = $this->createPATCHDocumentation($strategy);
-        }
-        
-        $doc->generic->resources = $resources;
+            //$resources->$name->patch = $this->createPATCHDocumentation($strategy);
+        }        
     }
 
 

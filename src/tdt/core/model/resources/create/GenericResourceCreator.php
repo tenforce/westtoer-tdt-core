@@ -44,8 +44,11 @@ class GenericResourceCreator extends ACreator {
      */
     public function documentParameters() {
         $parameters = parent::documentParameters();
-        $parameters["generic_type"] = "The type of the generic resource.";
-        $parameters["documentation"] = "Some descriptional documentation about the generic resource.";
+        $parameters["generic_type"] = array( 
+            "documentation" => "The type of the generic resource.",
+            "required" => true,
+        );
+
         $parameters = array_merge($parameters, $this->strategy->documentCreateParameters());
         return $parameters;
     }
@@ -54,11 +57,11 @@ class GenericResourceCreator extends ACreator {
      * This overrides the previous defined required parameters by ACreator. It needs $strategy to be an instance of a strategy. Therefor setParameter needs to have been called upon with a generic_type as argument.
      */
     public function documentRequiredParameters() {
-        $parameters = parent::documentRequiredParameters();
+        /*$parameters = parent::documentRequiredParameters();
         $parameters[] = "documentation";
         $parameters[] = "generic_type";
         $parameters = array_merge($parameters, $this->strategy->documentCreateRequiredParameters());
-        return $parameters;
+        return $parameters;*/
     }
 
     public function setParameter($key, $value) {

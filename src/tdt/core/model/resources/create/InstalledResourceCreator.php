@@ -32,20 +32,17 @@ class InstalledResourceCreator extends ACreator {
      */
     public function documentParameters() {
         $parameters = parent::documentParameters();
-        $parameters["location"] = "The location, relative to the custom/packages folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.";
-        $parameters["classname"] = "The name of the class i.e. myinstalledresource.";
-        return $parameters;
-    }
 
-    /**
-     * This overrides the previous defined required parameters by ACreator. It needs $strategy to be an instance of a strategy. Therefor setParameter needs to have been called upon with a generic_type as argument.
-     */
-    public function documentRequiredParameters() {
-        $parameters = parent::documentRequiredParameters();
-        $parameters[] = "location";
-        $parameters[] = "classname";
+        $parameters["location"] = array(
+            "documentation" => "The location, relative to the custom/packages folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.",
+            "required" => true,
+        );
+        $parameters["classname"] = array(
+            "documentation" => "The name of the class i.e. myinstalledresource.",
+            "required" => true,
+        );
         return $parameters;
-    }
+    }   
 
     public function setParameter($key, $value) {
         // set the correct parameters, to the this class or the strategy we're sure that every key,value passed is correct
