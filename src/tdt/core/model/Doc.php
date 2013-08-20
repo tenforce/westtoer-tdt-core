@@ -19,10 +19,7 @@ use tdt\core\utility\Config;
 use tdt\formatters\Formatter;
 
 class Doc {
-
-    /*
-     * installation variables
-     */
+    
     private $hostname;
     private $subdir;
 
@@ -117,39 +114,68 @@ class Doc {
      * @return $mixed An object which holds the documentation on how to perform admin functions such as creation, deletion and updates.
      */
     public function visitAllAdmin($factories) {
+
         $c = Cache::getInstance($this->prepareCacheConfig());
         $doc = $c->get($this->hostname . $this->subdir . "admindocumentation");
+
         if (is_null($doc)) {
 
             $doc = new \stdClass();
             $doc->protocol = "rest";
-            $doc->servicePath = "/discovery/";
+            $doc->servicePath = "/";
             $doc->rootUrl = $this->hostname . $this->subdir . "";
             $doc->resources = new \stdClass();
 
             // The definition section of the discovery document.
             $doc->resources->definitions = new \stdClass();
             $doc->resources->definitions->methods = new \stdClass();
+
+            // Fill in the put method of the definition resource.
             $doc->resources->definitions->methods->put = new \stdClass();
             $doc->resources->definitions->methods->put->httpMethod = "PUT";
+            $doc->resources->definitions->methods->put->path = "/definitions/{identifier}";
+            $doc->resources->definitions->methods->put->description = "Add a resource definition identified by {identifier} that allows the publication of data. The identifier has to exist out of 1 or more collection identifier and 1 resource identifier (e.g. city/statistics/demography). Pass the media type in the Content-Type header and fill in the corresponding parameters.";
 
             $doc->resources->definitions->methods->put->mediaType = new \stdClass();
             foreach ($factories as $factory) {
                 $factory->createPUTDocumentation($doc->resources->definitions->methods->put->mediaType);
             }
 
+            // Fill in the delete method of the definition resource.
+            $doc->resources->definitions->methods->delete = new \stdClass();
+            $doc->resources->definitions->methods->delete->httpMethod = "DELETE";
+            $doc->resources->definitions->methods->delete->path = "/definitions/{identifier}";
+            $doc->resources->definitions->methods->delete->description = "Remove a resource definition identified by the {identifier}, the corresponding uri that publishes the data will also be deleted.";
+
             // The info section of the discovery document.
             $doc->resources->info = new \stdClass();
             $doc->resources->info->resources = new \stdClass();
+
+            // Add the datasets.
             $doc->resources->info->resources->datasets = new \stdClass();
             $doc->resources->info->resources->datasets->methods = new \stdClass();
             $doc->resources->info->resources->datasets->methods->get = new \stdClass();
             $doc->resources->info->resources->datasets->methods->get->httpMethod = "GET";
-            $doc->resources->info->resources->datasets->methods->get->description = "Retrieve information about the available datasets.";
-            
+            $doc->resources->info->resources->datasets->methods->get->path = "/info/datasets";
+            $doc->resources->info->resources->datasets->methods->get->description = "Retrieve information about the available published datasets.";
+
+            // Add the formatters.
+            $doc->resources->info->resources->formatters = new \stdClass();
+            $doc->resources->info->resources->formatters->methods = new \stdClass();
+            $doc->resources->info->resources->formatters->methods->get = new \stdClass();
+            $doc->resources->info->resources->formatters->methods->get->httpMethod = "GET";
+            $doc->resources->info->resources->formatters->methods->get->path = "/info/formatters";
+            $doc->resources->info->resources->formatters->methods->get->description = "Retrieve the available formatters that can be used to retrieve/visualize data in.";
+
+            // Add the DCAT documentation.
+            $doc->resources->info->resources->dcat = new \stdClass();
+            $doc->resources->info->resources->dcat->methods->get = new \stdClass();
+            $doc->resources->info->resources->dcat->methods->get->httpMethod = "GET";
+            $doc->resources->info->resources->dcat->methods->get->path = "/info/dcat";
+            $doc->resources->info->resources->dcat->methods->get->description = "Retrieve information about the available published datasets in a DCAT vocabulary.";
+
             $c->set($this->hostname . $this->subdir . "admindocumentation", $doc, 60 * 60 * 60); // Cache it for 1 hour by default
         }           
-
         return $doc;
     }
 

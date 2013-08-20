@@ -549,7 +549,7 @@ class ResourcesModel {
      * @return array First entry is the [packagename], second entry is the [resourcename], third is the array with [RESTparameters]
      * If the package hasn't been found FALSE is returned!
      */
-      public function processPackageResourceString($packageresourcestring) {
+    public function processPackageResourceString($packageresourcestring) {
 
         $packageresourcestring = strtolower($packageresourcestring);
         $result = array();
@@ -566,11 +566,10 @@ class ResourcesModel {
         $doc = $model->getAllDoc();
         $foundPackage = FALSE;
         
-        /**
-         * Since we do not know where the package/resource/requiredparameters end, we're going to build the package string
-         * and check if it exists, if so we have our packagestring. Why is this always correct ? Take a look at the
-         * ResourcesModel class -> funcion isResourceValid()
-         */
+        
+        // Since we do not know where the package/resource/requiredparameters end, we're going to build the package string
+        // and check if it exists, if so we have our packagestring. Why is this always correct ? Take a look at the
+        // ResourcesModel class -> funcion isResourceValid()         
         $resourcename = "";
         $reqparamsstring = "";
 
