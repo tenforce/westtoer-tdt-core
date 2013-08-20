@@ -21,8 +21,9 @@ class GenericResourceCreator extends ACreator {
 
     private $strategy;
 
-    public function __construct($package, $resource, $RESTparameters, $generic_type) {
-        parent::__construct($package, $resource, $RESTparameters);
+    public function __construct($package, $resource, $generic_type) {
+        parent::__construct($package, $resource);
+
         // Add the parameters of the strategy!
         $this->generic_type = $generic_type;
         if (!class_exists("tdt\\core\\strategies\\" . $this->generic_type)) {
@@ -31,6 +32,7 @@ class GenericResourceCreator extends ACreator {
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
             throw new TDTException(452, array("Generic type does not exist: " . $this->generic_type . "."), $exception_config);
         }
+
         $classname = "tdt\\core\\strategies\\" . $this->generic_type;
         // add all the parameters to the $parameters
         // and all of the requiredParameters to the $requiredParameters
@@ -46,6 +48,10 @@ class GenericResourceCreator extends ACreator {
         $parameters = parent::documentParameters();        
 
         $parameters = array_merge($parameters, $this->strategy->documentCreateParameters());
+        $parameters["documentation"] = array(
+                "description" => "A description about the dataset to be published.",
+                "required" => true,
+            );
         return $parameters;
     }   
 
@@ -58,17 +64,15 @@ class GenericResourceCreator extends ACreator {
     }
 
     /**
-     * execution method
-     * Preconditions:
-     * parameters have already been set.
-     */
+     * Create the resource definition.
+     */ 
     public function create() {
         
         R::setStrictTyping(false);
-        /*
-         * Create the package and resource entities and create a generic resource entry.
-         * Then pick the correct strategy, and pass along the parameters!
-         */
+        
+        // Create the package and resource entities and create a generic resource entry.
+        // Then pick the correct strategy, and pass along the parameters!
+        
         $package_id = parent::makePackage($this->package);
 
         $resource_id = parent::makeResource($package_id, $this->resource, "generic");

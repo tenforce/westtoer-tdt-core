@@ -26,8 +26,8 @@ class InstalledResourceFactory extends AResourceFactory {
         $this->directory = __DIR__ . "/packages/installed/";
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        $creator = new InstalledResourceCreator($package, $resource, $RESTparameters);
+    public function createCreator($package, $resource, $parameters) {
+        $creator = new InstalledResourceCreator($package, $resource);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -36,7 +36,7 @@ class InstalledResourceFactory extends AResourceFactory {
 
     public function createReader($package, $resource, $parameters, $RESTparameters) {
 
-        // location contains the full name of the file, including the .class.php extension
+        // Location contains the full name of the file, including the .class.php extension
         $location = $this->getLocationOfResource($package, $resource);
 
         if (file_exists($this->directory . $location)) {
@@ -58,14 +58,14 @@ class InstalledResourceFactory extends AResourceFactory {
         return isset($resource["present"]) && $resource["present"] >= 1;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        $deleter = new InstalledResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        $deleter = new InstalledResourceDeleter($package, $resource);
         return $deleter;
     }
 
     public function makeDoc($doc) {
-        //ask every resource we have for documentation
 
+        // Ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
@@ -76,7 +76,7 @@ class InstalledResourceFactory extends AResourceFactory {
                 $example_uri = DBQueries::getExampleUri($package, $resourcename);
                 $location = $this->getLocationOfResource($package, $resourcename);
 
-                // file can always have been removed after adding it as a published resource
+                // File can always have been removed after adding it as a published resource
                 if (file_exists($this->directory . $location)) {
                     $classname = $this->getClassnameOfResource($package, $resourcename);
                     $doc->$package->$resourcename = new \stdClass();
@@ -92,8 +92,8 @@ class InstalledResourceFactory extends AResourceFactory {
     }
 
     public function makeDescriptionDoc($doc) {
-        //ask every resource we have for documentation
 
+        // Ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
@@ -177,7 +177,7 @@ class InstalledResourceFactory extends AResourceFactory {
         $media_type = "application/installed";
         $doc->$media_type = new \stdClass();
 
-        $installedResource = new InstalledResourceCreator("", "", array());
+        $installedResource = new InstalledResourceCreator("", "");
         $doc->$media_type->description = "You can publish an installed resource when you have created a resource-class in the installed folder.";        
         $doc->$media_type->parameters = $installedResource->documentParameters();                   
    }

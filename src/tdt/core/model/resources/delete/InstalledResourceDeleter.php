@@ -15,19 +15,13 @@ use tdt\core\model\DBQueries;
 
 class InstalledResourceDeleter extends ADeleter {
 
-    /**
-     * execution method
-     */
     public function delete() {
 
-        /**
-         * delete bottom up
-         */
+        
+        // Delete the defintion bottom up.
         DBQueries::deleteInstalledResource($this->package, $this->resource);
         DBQueries::deleteResource($this->package, $this->resource);
         DBQueries::deletePackage($this->package);
     }
 
 }
-
-?>

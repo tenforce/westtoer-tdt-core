@@ -37,11 +37,12 @@ abstract class AResourceFactory {
 
     /**
      * Creates an instance of a creator class.
-     * @param $package the new package of the resource. It may exist already
-     * @param $resource the name of the new resource. If it exists already, an exception will be thrown
+     * @param $package The new package of the resource. It may exist already
+     * @param $resource The name of the new resource. If it exists already, an exception will be thrown
+     * @param parameters The array of parameters that form the resource definition.
      * @return The returned class extends ACreator and can add a resource to the system
      */
-    abstract public function createCreator($package, $resource, $parameters, $RESTparameters);
+    abstract public function createCreator($package, $resource, $parameters);
 
     /**
      * Creates an instance of a reader. This can return the right information for a request
@@ -53,11 +54,11 @@ abstract class AResourceFactory {
 
     /**
      * Creates an instance of a deleter class.
-     * @param $package the package of the resource. It will not get deleted
+     * @param $package the package of the resource.
      * @param $resource the name of the new resource.
      * @return The returned class extends ADeleter and can delete a resource from the system
      */
-    abstract public function createDeleter($package, $resource, $RESTparameters);
+    abstract public function createDeleter($package, $resource);
 
     /**
      * Visitor pattern function: This is the documentation on how to call a read resource
@@ -70,26 +71,7 @@ abstract class AResourceFactory {
      * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds its full description.
      */
     abstract public function makeDescriptionDoc($doc);
-
-    /**
-     * Visitor pattern function
-     * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
-     */
-    //abstract public function makeDeleteDoc($doc);
-
-    /**
-     * Visitor pattern function
-     * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
-     */
-    //abstract public function makeCreateDoc($doc);
-
-    /**
-     * Visitor pattern function
-     * @param $doc Doc is an instance of the Doc class. It will go allong every factory and ask for every resource's documentation data. Each resource adds what it wants to add.
-     */
-/*    public function makeUpdateDoc($doc) {
-        
-    }*/
+    
     public function createAPIDocumentation($doc){
     }
 

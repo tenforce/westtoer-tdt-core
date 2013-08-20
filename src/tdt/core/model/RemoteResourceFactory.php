@@ -44,8 +44,8 @@ class RemoteResourceFactory extends AResourceFactory {
         return $resources;
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        $creator = new RemoteResourceCreator($package, $resource, $RESTparameters);
+    public function createCreator($package, $resource, $parameters) {
+        $creator = new RemoteResourceCreator($package, $resource);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -58,8 +58,8 @@ class RemoteResourceFactory extends AResourceFactory {
         return $reader;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        return new RemoteResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        return new RemoteResourceDeleter($package, $resource);
     }
 
     public function makeDoc($doc) {
@@ -109,7 +109,7 @@ class RemoteResourceFactory extends AResourceFactory {
         $media_type = "application/remote";
         $doc->$media_type = new \stdClass();
 
-        $remote_resource = new RemoteResourceCreator("", "", array()); 
+        $remote_resource = new RemoteResourceCreator("", ""); 
         $doc->$media_type->description = "Creates a new remote resource by executing a HTTP PUT on an URL formatted like " . Config::get("general", "hostname") . Config::get("general", "subdir") . "packagename/newresource. The base_uri needs to point to another The DataTank instance.";        
         $doc->$media_type->parameters = $remote_resource->documentParameters();           
     }

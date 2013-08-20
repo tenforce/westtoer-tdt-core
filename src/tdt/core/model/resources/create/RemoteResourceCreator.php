@@ -17,10 +17,11 @@ use tdt\exceptions\TDTException;
 use tdt\core\utility\Config;
 use tdt\core\utility\Request;
 
-/**
- * When creating a resource, we always expect a PUT method!
- */
 class RemoteResourceCreator extends ACreator {
+
+    public function __construct($package, $resource) {
+        parent::__construct($package, $resource);
+    }
 
     /**
      * Overrides previously defined method for getting the right parameters.
@@ -55,9 +56,8 @@ class RemoteResourceCreator extends ACreator {
     }
 
     /**
-     * execution method
-     * Preconditions:
-     * parameters have already been set.
+     * Create the resource definition.
+     * The parameters that have been defined can be access via $this.
      */
     public function create() {
         if (!isset($this->resource_name) && $this->resource != "") {

@@ -86,7 +86,7 @@ class CUDController extends AController {
         if (count($pieces) < 2) {
             $this->throwException(452, array("The identifier has to exist out of a minimum of two parts, identifier passed: $packageresourcestring"));
         }
-
+        
         // Fetch all the PUT variables in one array.
         $HTTPheaders = getallheaders();
         if (!empty($HTTPheaders["Content-Type"])){
@@ -103,9 +103,10 @@ class CUDController extends AController {
         }else {
             $this->throwException(452, array("The content-type didn't contain a media type. Check out our discovery document for a list of available media types."));
         }
-
+        
         parse_str(file_get_contents("php://input"), $params);
-
+        
+        $params["media_type"] = $media_type;
         $RESTparameters = array();
 
         $model->createResource($packageresourcestring, $params);

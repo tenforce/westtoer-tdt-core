@@ -21,8 +21,8 @@ class InstalledResourceCreator extends ACreator {
 
     private $directory;
 
-    public function __construct($package, $resource, $RESTparameters) {
-        parent::__construct($package, $resource, $RESTparameters);
+    public function __construct($package, $resource) {
+        parent::__construct($package, $resource);
 
         $this->directory = __DIR__ . "/../../packages/installed/";
     }
@@ -52,10 +52,8 @@ class InstalledResourceCreator extends ACreator {
     }
 
     /**
-     * execution method
-     * Preconditions:
-     * parameters have already been set.
-     */
+     * Create the resource definition.
+     */ 
     public function create(){
 
         // Create the package and resource entities and create a generic resource entry.

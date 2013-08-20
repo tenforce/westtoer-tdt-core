@@ -31,14 +31,14 @@ class GenericResourceFactory extends AResourceFactory {
         return isset($resource["present"]) && $resource["present"] >= 1;
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        if (!isset($parameters["generic_type"])) {
+    public function createCreator($package, $resource, $parameters) {
+        if (empty($parameters["generic_type"])) {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
             throw new TDTException(452, array("The generic type has not been set"), $exception_config);
         }
-        $creator = new GenericResourceCreator($package, $resource, $RESTparameters, $parameters["generic_type"]);
+        $creator = new GenericResourceCreator($package, $resource, $parameters["generic_type"]);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -51,8 +51,8 @@ class GenericResourceFactory extends AResourceFactory {
         return $reader;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        $deleter = new GenericResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        $deleter = new GenericResourceDeleter($package, $resource);
         return $deleter;
     }
 
@@ -173,7 +173,7 @@ class GenericResourceFactory extends AResourceFactory {
             $doc->$media_type->description = "Create a definition that allows the publication of data from a $strategy_name based data structure.";
             $doc->$media_type->parameters = new \stdClass();
 
-            $creator = new GenericResourceCreator("", "", array(), $strategy);            
+            $creator = new GenericResourceCreator("", "", $strategy);            
             $doc->$media_type->parameters = $creator->documentParameters();
         }
     }
@@ -207,7 +207,7 @@ class GenericResourceFactory extends AResourceFactory {
         $patch->description = "PATCH a resource definition .";
         $patch->parameters = new \stdClass();   
 
-        $creator = new GenericResourceCreator("", "", array(), $strategy);            
+        $creator = new GenericResourceCreator("", "", $strategy);            
         $parameters = $creator->documentParameters();
         $req_parameters = $creator->documentRequiredParameters();
         

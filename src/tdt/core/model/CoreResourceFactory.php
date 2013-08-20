@@ -30,21 +30,13 @@ class CoreResourceFactory extends AResourceFactory {
                     "tdtadmin" => array("resources","docreset", "discovery")
                 );
     }
-
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        //do nothing
-    }
-
+    
     public function createReader($package, $resource, $parameters, $RESTparameters) {
         
         $classname = $this->namespace . $package . "\\"  . ucfirst($resource);
         $reader = new $classname($package, $resource, $RESTparameters);
         $reader->processParameters($parameters);
         return $reader;
-    }
-
-    public function createDeleter($package, $resource, $RESTparameters) {
-        //do nothing
     }
 
     public function makeDoc($doc) {
@@ -100,12 +92,8 @@ class CoreResourceFactory extends AResourceFactory {
         $doc->delete->core = $d;
     }
 
-    public function createPUTDocumentation($doc){
-        
-    }
-
     public function getAllPackagesDoc() {
-        //ask every resource we have for documentation
+        // Ask every resource we have for documentation
         $packages = array();
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             array_push($packages, $package);
@@ -131,4 +119,12 @@ class CoreResourceFactory extends AResourceFactory {
         return $rdf_string;
     }
 
+    public function createCreator($package, $resource, $parameters) {        
+    }
+
+    public function createDeleter($package, $resource) {        
+    }
+      
+    public function createPUTDocumentation($doc){  
+    }
 }
