@@ -21,7 +21,7 @@ use tdt\core\model\resources\update\GenericResourceUpdater;
 use tdt\exceptions\TDTException;
 use tdt\core\utility\Config;
 
-class GenericResourceFactory extends AResourceFactory {
+class GenericResourceFactory extends AResourceFactory {    
 
     public function __construct() {
     }
@@ -31,14 +31,14 @@ class GenericResourceFactory extends AResourceFactory {
         return isset($resource["present"]) && $resource["present"] >= 1;
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        if (!isset($parameters["generic_type"])) {
+    public function createCreator($package, $resource, $parameters) {
+        if (empty($parameters["generic_type"])) {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
             throw new TDTException(452, array("The generic type has not been set"), $exception_config);
         }
-        $creator = new GenericResourceCreator($package, $resource, $RESTparameters, $parameters["generic_type"]);
+        $creator = new GenericResourceCreator($package, $resource, $parameters["generic_type"]);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -51,8 +51,8 @@ class GenericResourceFactory extends AResourceFactory {
         return $reader;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        $deleter = new GenericResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        $deleter = new GenericResourceDeleter($package, $resource);
         return $deleter;
     }
 
@@ -159,48 +159,93 @@ class GenericResourceFactory extends AResourceFactory {
         return $resources;
     }
 
-    public function makeDeleteDoc($doc) {
-        //add stuff to the delete attribute in doc. No other parameters expected
-        $d = new \stdClass();
-        if (!isset($doc->delete)) {
-            $doc->delete = new \stdClass();
+    /**
+     * Create the PUT method documentation.
+     */ 
+    public function createPUTDocumentation($doc) {        
+
+        foreach($this->getAllStrategies() as $strategy){
+
+            $strategy_name = strtolower($strategy);            
+            $media_type = "application/$strategy_name";
+            $doc->$media_type = new \stdClass();
+            
+            $doc->$media_type->description = "Create a definition that allows the publication of data from a $strategy_name based data structure.";
+            $doc->$media_type->parameters = new \stdClass();
+
+            $creator = new GenericResourceCreator("", "", $strategy);            
+            $doc->$media_type->parameters = $creator->documentParameters();
         }
-        $d->documentation = "You can delete every generic resource by sending a DELETE HTTP request to the resource definition located in TDTAdmin/Resources.";
-        $doc->delete->generic = new \stdClass();
-        $doc->delete->generic = $d;
     }
 
-    public function makeCreateDoc($doc) {
-        $d = array();
-        foreach ($this->getAllStrategies() as $strategy) {
-            $res = new GenericResourceCreator("", "", array(), $strategy);
-            $d[$strategy] = new \stdClass();
-            $d[$strategy]->documentation = "When your file is structured according to a $strategy -datasource, you can perform a PUT request and load this file in this DataTank";
-            $d[$strategy]->parameters = $res->documentParameters();
-            $d[$strategy]->requiredparameters = $res->documentRequiredParameters();
-        }
-        if (!isset($doc->create)) {
-            $doc->create = new \stdClass();
-        }
-        $doc->create->generic = new \stdClass();
-        $doc->create->generic = $d;
+    /**
+     * Create the DELETE method documentation.
+     */ 
+    public function createDELETEDocumentation($strategy) {
+        
+        $delete = new \stdClass();
+
+        $strategy_name = strtolower($strategy);
+        $delete->id = "generic.$strategy_name.delete";
+        $delete->httpMethod = "DELETE";
+        $delete->description = "Delete a resource definition removing it permanently.";
+        $delete->parameters = new \stdClass();        
+        
+        return $delete;
     }
 
-    public function makeUpdateDoc($doc) {
-        $d = array();
-        foreach ($this->getAllStrategies() as $strategy) {
-            $res = new GenericResourceUpdater("", "", array(), $strategy);
-            $d[$strategy] = new \stdClass();
-            $d[$strategy]->documentation = "When your generic resource is made you can update properties of it by passing the property names via a PATCH request to TDTAdmin/Resources. Note that only create parameters are adjustable.";
-            $d[$strategy]->parameters = array();
-            $d[$strategy]->requiredparameters = array();
-        }
-        if (!isset($doc->update)) {
-            $doc->update = new \stdClass();
-        }
-        $doc->update->generic = new \stdClass();
-        $doc->update->generic = $d;
+    /**
+     * Create the PATCH method documentation.
+     */ 
+    public function createPATCHDocumentation($strategy) {
+        
+        $patch = new \stdClass();
+
+        $strategy_name = strtolower($strategy);
+        $patch->id = "generic.$strategy_name.patch";
+        $patch->httpMethod = "PATCH";
+        $patch->description = "PATCH a resource definition .";
+        $patch->parameters = new \stdClass();   
+
+        $creator = new GenericResourceCreator("", "", $strategy);            
+        $parameters = $creator->documentParameters();
+        $req_parameters = $creator->documentRequiredParameters();
+        
+        foreach($parameters as $parameter => $documentation){           
+            $param_class = new \stdClass();
+            $param_class->description = $documentation;            
+
+            $patch->parameters->$parameter = $param_class;
+            
+        }     
+        
+        return $patch;
     }
+
+    /**
+     * Create the API documentation of generic resources, structure is based on the
+     * google discovery API reference.
+     */ 
+    public function createAPIDoc($doc){        
+        
+        $resources = new \stdClass();
+
+        if(!empty($doc->resources)){
+            $resources = $doc->resources;
+        }else{
+            $doc->resources = $resources;
+        }        
+
+        foreach($this->getAllStrategies() as $strategy){
+            $name = strtolower($strategy);
+            $resources->$name = new \stdClass();
+        
+            $resources->$name-> $this->createcumentation($strategy);
+            $resources->$name->delete = $this->createDELETEDocumentation($strategy);
+            //$resources->$name->patch = $this->createPATCHDocumentation($strategy);
+        }        
+    }
+
 
     private function getAllStrategies() {
         $strategies = array();
@@ -221,6 +266,21 @@ class GenericResourceFactory extends AResourceFactory {
         return $strategies;
     }
 
-}
+    public function createDCATDocumentation(){
 
-?>
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+            }
+        }
+
+        return $rdf_string;
+    }
+}

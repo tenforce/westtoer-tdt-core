@@ -1,23 +1,21 @@
 <?php
 
 /**
- * Returns all formatters in TDT
+ * This is a class which will return all the packages in The DataTank
  *
  * @package The-Datatank/packages/TDTInfo
  * @copyright (C) 2011 by iRail vzw/asbl
  * @license AGPLv3
- * @author Pieter Colpaert   <pieter@iRail.be>
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
 namespace tdt\core\model\packages\core\TDTInfo;
 
-use tdt\core\model\Doc;
 use tdt\core\model\resources\read\AReader;
+use tdt\core\model\ResourcesModel;
 use tdt\core\utility\Config;
-use tdt\exceptions\TDTException;
 
-class TDTInfoFormatters extends AReader {
+class Packages extends AReader {
 
     public static function getParameters() {
         return array();
@@ -28,24 +26,18 @@ class TDTInfoFormatters extends AReader {
     }
 
     public function setParameter($key, $val) {
-        //we don't have any parameters
+
     }
 
     public function read() {
-        $d = new Doc();
-        $result_object = $d->visitAllFormatters();
+        $resmod = ResourcesModel::getInstance(Config::getConfigArray());
+        $result_object = $resmod->getAllPackagesDoc();
 
         foreach($this->RESTparameters as $param){
             if (is_object($result_object) && isset($result_object->$param)) {
                 $result_object = $result_object->$param;
-            }else if (is_array($result_object)) {
-                foreach($result_object as $key => $value){
-                    if(strtolower($key) == $param){
-                        $result_object = $result_object[$key];
-                        break;
-                    }
-                }
-
+            }else if (is_array($result_object) && isset($result_object[$param])) {
+                $result_object = $result[$param];
             }else {
                 $exception_config = array();
                 $exception_config["log_dir"] = Config::get("general", "logging", "path");
@@ -58,7 +50,7 @@ class TDTInfoFormatters extends AReader {
     }
 
     public static function getDoc() {
-        return "Returns all formatters available in the installed datatank.";
+        return "This resource contains every package installed on this DataTank instance.";
     }
 
 }

@@ -16,6 +16,7 @@ use tdt\core\model\DBQueries;
 use tdt\core\model\resources\create\InstalledResourceCreator;
 use tdt\core\model\resources\delete\InstalledResourceDeleter;
 use tdt\exceptions\TDTException;
+use tdt\core\utility\Config;
 
 class InstalledResourceFactory extends AResourceFactory {
 
@@ -25,8 +26,8 @@ class InstalledResourceFactory extends AResourceFactory {
         $this->directory = __DIR__ . "/packages/installed/";
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        $creator = new InstalledResourceCreator($package, $resource, $RESTparameters);
+    public function createCreator($package, $resource, $parameters) {
+        $creator = new InstalledResourceCreator($package, $resource);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -35,7 +36,7 @@ class InstalledResourceFactory extends AResourceFactory {
 
     public function createReader($package, $resource, $parameters, $RESTparameters) {
 
-        // location contains the full name of the file, including the .class.php extension
+        // Location contains the full name of the file, including the .class.php extension
         $location = $this->getLocationOfResource($package, $resource);
 
         if (file_exists($this->directory . $location)) {
@@ -57,14 +58,14 @@ class InstalledResourceFactory extends AResourceFactory {
         return isset($resource["present"]) && $resource["present"] >= 1;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        $deleter = new InstalledResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        $deleter = new InstalledResourceDeleter($package, $resource);
         return $deleter;
     }
 
     public function makeDoc($doc) {
-        //ask every resource we have for documentation
 
+        // Ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
@@ -75,7 +76,7 @@ class InstalledResourceFactory extends AResourceFactory {
                 $example_uri = DBQueries::getExampleUri($package, $resourcename);
                 $location = $this->getLocationOfResource($package, $resourcename);
 
-                // file can always have been removed after adding it as a published resource
+                // File can always have been removed after adding it as a published resource
                 if (file_exists($this->directory . $location)) {
                     $classname = $this->getClassnameOfResource($package, $resourcename);
                     $doc->$package->$resourcename = new \stdClass();
@@ -91,8 +92,8 @@ class InstalledResourceFactory extends AResourceFactory {
     }
 
     public function makeDescriptionDoc($doc) {
-        //ask every resource we have for documentation
 
+        // Ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
@@ -161,34 +162,65 @@ class InstalledResourceFactory extends AResourceFactory {
     /**
      * Put together the deletion documentation for installed resources
      */
-    public function makeDeleteDoc($doc) {
+    public function createDELETEDocumentation() {
         $d = new \stdClass();
-        $d->doc = "Installed resources can be deleted by sending a DELETE HTTP request to the resource definition located in TDTAdmin/Resources. The physical file however will remain existant, but no longer published.";
-        if (!isset($doc->delete)) {
-            $doc->delete = new \stdClass();
-        }
-        $doc->delete->installed = new \stdClass();
-        $doc->delete->installed = $d;
+        $d->description = "Delete an installed source type definition, the physical file however will remain present.";
+        $d->httpMethod = "DELETE";
+        return $d;
     }
 
     /**
      * Put together the creation documentation for installed resources
      */
-    public function makeCreateDoc($doc) {
+    public function createPUTDocumentation($doc) {    
+                    
+        $media_type = "application/installed";
+        $doc->$media_type = new \stdClass();
 
-        $d = new \stdClass();
-        $installedResource = new InstalledResourceCreator("", "", array());
-        $d->doc = "You can PUT an installed resource when you have created a resource-class in the installed folder.";
-        $d->parameters = $installedResource->documentParameters();
-        $d->requiredparameters = $installedResource->documentRequiredParameters();
+        $installedResource = new InstalledResourceCreator("", "");
+        $doc->$media_type->description = "You can publish an installed resource when you have created a resource-class in the installed folder.";        
+        $doc->$media_type->parameters = $installedResource->documentParameters();                   
+   }
 
-        if (!isset($doc->create)) {
-            $doc->create = new \stdClass();
+
+    /**
+     * Create the API documentation of generic resources, structure is based on the
+     * google discovery API reference.
+     */ 
+    public function createAPIDoc($doc){
+
+        $resources = new \stdClass();
+
+        if(!empty($doc->resources)){
+            $resources = $doc->resources;
+        }else{
+            $doc->resources = $resources;
+        }    
+
+        $resources->installed = new \stdClass();
+
+        $resources->installed->put = $this->createPUTDocumentation();
+        $resources->installed->delete = $this->createDELETEDocumentation();
+
+        $doc->resources = $resources;
+    }
+
+    public function createDCATDocumentation(){
+
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+            }
         }
-        $doc->create->installed = new \stdClass();
-        $doc->create->installed = $d;
+
+        return $rdf_string;
     }
 
 }
-
-?>

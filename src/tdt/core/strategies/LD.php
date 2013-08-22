@@ -35,15 +35,7 @@ class LD extends SPARQL {
     public function isValid($package_id, $generic_resource_id) {
         return true;
     }
-
-    /**
-     * The parameters returned are required to make this strategy work.
-     * @return array with parameter => documentation pairs
-     */
-    public function documentCreateRequiredParameters() {
-        return array("endpoint");
-    }
-
+   
     public function documentReadRequiredParameters() {
         return array();
     }
@@ -53,10 +45,23 @@ class LD extends SPARQL {
     }
 
     public function documentCreateParameters() {
+        
         return array(
-            "endpoint" => "The URI of the SPARQL endpoint.",
-            "endpoint_user" => "Username for file behind authentication",
-            "endpoint_password" => "Password for file behind authentication"
+
+            "endpoint" => array(
+                "description" => "The URI of the SPARQL endpoint.",
+                "required" => true,
+            ),
+
+            "endpoint_user" => array(
+                "description" => "Username for file behind authentication",
+                "required" => true,
+            ),
+
+            "endpoint_password" => array(
+                "description" => "Password for file behind authentication",
+                "required" => true,
+            ),
         );
     }
 

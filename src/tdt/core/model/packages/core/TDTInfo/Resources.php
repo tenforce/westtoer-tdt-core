@@ -16,7 +16,7 @@ use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
 use tdt\core\utility\Config;
 
-class TDTInfoResources extends AReader {
+class Resources extends AReader {
 
     public static function getParameters() {
         return array();

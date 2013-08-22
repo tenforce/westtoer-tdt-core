@@ -17,16 +17,13 @@ abstract class ADeleter {
     protected $resource;
     protected $RESTparameters;
 
-    public function __construct($package, $resource, $RESTparameters) {
+    public function __construct($package, $resource) {
         $this->package = $package;
-        $this->resource = $resource;
-        $this->RESTparameters = $RESTparameters;
+        $this->resource = $resource;        
     }
 
     /**
-     * This method deletes a resource.
+     * This method deletes a resource definition.
      */
     abstract public function delete();
 }
-
-?>

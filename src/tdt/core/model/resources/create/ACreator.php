@@ -36,13 +36,12 @@ abstract class ACreator {
      * @return hash with key = parameter name and value = documentation about the parameter
      */
     public function documentParameters() {
-        $createParameters = array("resource_type" => "The type of the resource. i.e. generic, installed,remote");
-        return array_merge($createParameters, $this->documentMetaDataParameters());
+        return $this->documentMetaDataParameters();
     }
 
     public function documentMetaDataParameters() {
         return array(
-            "package_title" => "An alias for the package name, used for presentation and visualization purposes.",
+            /*"package_title" => "An alias for the package name, used for presentation and visualization purposes.",
             "resource_title" => "An alias for the resource name, used for presentation and visualization purposes.",
             "tags" => "A serie of descriptive tags, separated with a semi-colon.",
             "audience" => "A class of entity for whom the resource is intended or useful.",
@@ -54,17 +53,9 @@ abstract class ACreator {
             "publisher" => "An entity responsible for making the resource available.",
             "rights" => "Information about rights held in and over the resource.",
             "rights_holder" => "A person or organization owning or managing rights over the resource.",
-            "example_uri" => "An example of how a call to the resource may look like."
+            "example_uri" => "An example of how a call to the resource may look like."*/
         );
-    }
-
-    /**
-     * get the required parameters
-     * @return array with all of the required parameters
-     */
-    public function documentRequiredParameters() {
-        return array("resource_type");
-    }
+    }   
 
     /**
      * make package id
@@ -130,5 +121,3 @@ abstract class ACreator {
     }
 
 }
-
-?>

@@ -14,7 +14,7 @@ namespace tdt\core\model\packages\core\TDTInfo;
 use tdt\core\model\Doc;
 use tdt\core\model\resources\read\AReader;
 
-class TDTInfoVisualizations extends AReader {
+class Visualizations extends AReader {
 
     public static function getParameters() {
         return array();
@@ -38,5 +38,3 @@ class TDTInfoVisualizations extends AReader {
     }
 
 }
-
-?>

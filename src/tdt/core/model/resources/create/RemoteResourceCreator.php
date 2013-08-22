@@ -17,30 +17,34 @@ use tdt\exceptions\TDTException;
 use tdt\core\utility\Config;
 use tdt\core\utility\Request;
 
-/**
- * When creating a resource, we always expect a PUT method!
- */
 class RemoteResourceCreator extends ACreator {
 
-    /**
-     * Overrides previously defined method for getting the right parameters.
-     * It first calls upon the parent. Then it extends the parent required parameters with base_url and package_name
-     */
-    public function documentParameters() {
-        $parameters = parent::documentParameters();
-        $parameters["base_url"] = "The base url from the remote resource.";
-        $parameters["package_name"] = "The remote package name of the remote resource.";
-        $parameters["resource_name"] = "The remote resource name of the remote resource. Default value is the local resource_name.";
-        return $parameters;
+    public function __construct($package, $resource) {
+        parent::__construct($package, $resource);
     }
 
     /**
      * Overrides previously defined method for getting the right parameters.
      * It first calls upon the parent. Then it extends the parent required parameters with base_url and package_name
      */
-    public function documentRequiredParameters() {
-        $parameters = parent::documentRequiredParameters();
-        $parameters[] = "base_url";
+    public function documentParameters() {
+
+        $parameters = parent::documentParameters();
+        $parameters["base_url"] = array(
+            "description" => "The base url from the remote resource.",
+            "required" => true,
+        );
+
+        $parameters["package_name"] = array(
+            "description" => "The remote package name of the remote resource.",
+            "required" => true,
+        );
+
+        $parameters["resource_name"] = array(
+            "description" => "The remote resource name of the remote resource. Default value is the local resource_name.",
+            "required" => true,
+        );
+
         return $parameters;
     }
 
@@ -52,9 +56,8 @@ class RemoteResourceCreator extends ACreator {
     }
 
     /**
-     * execution method
-     * Preconditions:
-     * parameters have already been set.
+     * Create the resource definition.
+     * The parameters that have been defined can be access via $this.
      */
     public function create() {
         if (!isset($this->resource_name) && $this->resource != "") {

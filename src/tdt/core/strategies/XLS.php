@@ -27,23 +27,49 @@ class XLS extends ATabularData {
         $this->tmp_dir = __DIR__ . "/../tmp";
     }
 
+    private $tmp_dir;
+
     public function documentCreateParameters(){
-        $this->parameters["uri"] = "The path to the excel sheet (can be a url as well).";
-        $this->parameters["sheet"] = "The sheet name of the excel";
-        $this->parameters["named_range"] = "The named range of the excel";
-        $this->parameters["cell_range"] = "Range of cells (i.e. A1:B10)";
-        $this->parameters["PK"] = "The primary key for each row.";
-        $this->parameters["has_header_row"] = "If the XLS file contains a header row with the column name, pass 1 as value, if not pass 0. Default value is 1.";
-        $this->parameters["start_row"] = "The number of the row (rows start at number 1) at which the actual data starts; i.e. if the first two lines are comment lines, your start_row should be 3. Default is 1.";        
+        $this->parameters["uri"] = array(
+            "description" => "The path to the excel sheet (can be a url as well).",
+            "required" => true,
+        );
+
+        $this->parameters["sheet"] = array(
+            "description" => "The sheet name of the excel",
+            "required" => true,
+        );
+
+        $this->parameters["named_range"] = array(
+            "description" => "The named range of the excel",
+            "required" => false,
+        );
+
+        $this->parameters["cell_range"] = array(
+            "description" => "Range of cells (i.e. A1:B10)",
+            "required" => false,
+        );
+
+        $this->parameters["PK"] = array(
+            "description" => "The primary key for each row.",
+            "required" => false,
+        );
+
+        $this->parameters["has_header_row"] = array(
+            "description" => "If the XLS file contains a header row with the column name, pass 1 as value, if not pass 0. Default value is 1.",
+            "required" => false,
+            "defaultValue" => true,
+        );
+
+        $this->parameters["start_row"] = array(
+            "description" => "The number of the row (rows start at number 1) at which the actual data starts; i.e. if the first two lines are comment lines, your start_row should be 3. Default is 1.",
+            "required" => false,
+            "defaultValue" => 1,
+        );
+
 
         return $this->parameters;
     }
-
-    private $tmp_dir;
-
-    public function documentCreateRequiredParameters(){
-        return array("uri", "sheet");
-    }   
 
     public function documentReadParameters(){
         return array();

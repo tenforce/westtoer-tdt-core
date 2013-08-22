@@ -22,16 +22,24 @@ use tdt\core\utility\Config;
 class SHP extends ATabularData {
 
     public function documentCreateParameters(){
-        return array("uri" => "The path to the shape file (can be a url).",
-                     "epsg" => "EPSG coordinate system code. Default to 4326.",
-                     "columns" => "The columns that are to be published. By default it will publish all columns.",
-                     "column_aliases" => "An array that contains the alias of a published column. This array should be build as column_name => column_alias. If no array is passed, the alias will be equal to the normal column name. If your column name,used as a key, contains whitespaces be sure to replace them with an underscore.",
-                     "PK" => "The primary key for each row.",
-        );
-    }
+        return array(
+            "uri" => array(
+                "description" => "The path to the shape file (can be a url).",
+                "required" => true,
+            ),
 
-    public function documentCreateRequiredParameters(){
-        return array("uri");
+            "epsg" => array(
+                "description" => "EPSG coordinate system code.",
+                "required" => false,
+                "defaultValue" => 4326,
+            ),            
+
+            "PK" => array(
+                "description" => "The primary key for each row.",
+                "required" => false,
+            ),
+
+        );
     }
 
     public function documentReadRequiredParameters(){
@@ -130,7 +138,7 @@ class SHP extends ATabularData {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array("The uri of the shape file can't be located ( $configObject->uri )."), $exception_config);
+            throw new TDTException(452, array("The uri of the shape file can't be resolved, uri given: $configObject->uri"), $exception_config);
         }
 
         $columns = array();
@@ -260,7 +268,8 @@ class SHP extends ATabularData {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array("The data could not be retrieved from the shape file with uri $configObject->uri."), $exception_config);
+            throw new TDTException(452, array("The data could not be retrieved from the shape file with uri $configObject->u"), $exception_config);
+
         }
     }
 }

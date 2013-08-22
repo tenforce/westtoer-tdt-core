@@ -26,8 +26,16 @@ abstract class ATabularData extends AResourceStrategy {
 
     function __construct() {
 
-        $this->parameters["columns"] = "An array that contains the name of the columns that are to be published, if an empty array is passed every column will be published. This array should be build as index => column_alias.";
-        $this->parameters["column_aliases"] = "An array that contains the alias of a published column. This array should be build as column_name => column_alias. If no array is passed, the alias will be equal to the normal column name. If your column name,used as a key, contains whitespaces be sure to replace them with an underscore.";
+        $this->parameters["columns"] = array(
+            "description" => "An array that contains the name of the columns that are to be published, if an empty array is passed every column will be published. This array should be build as index => column_alias.",
+            "required" => false,
+            "defaultValue" => "By default the column names of the tabular structure are stored.",
+        );
+
+        $this->parameters["column_aliases"] = array(
+            "description" => "Column aliases is an associative array where the key is the name of the column and the value a string that serves as an alias.",
+            "required" => false,
+        );
     }
 
     /**
