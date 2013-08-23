@@ -20,6 +20,7 @@ use tdt\core\model\resources\read\GenericResourceReader;
 use tdt\core\model\resources\update\GenericResourceUpdater;
 use tdt\exceptions\TDTException;
 use tdt\core\utility\Config;
+use tdt\core\model\Doc;
 
 class GenericResourceFactory extends AResourceFactory {    
 
@@ -167,7 +168,7 @@ class GenericResourceFactory extends AResourceFactory {
         foreach($this->getAllStrategies() as $strategy){
 
             $strategy_name = strtolower($strategy);            
-            $media_type = "application/$strategy_name";
+            $media_type = Doc::$MEDIA_TYPE_PREFIX . $strategy_name;
             $doc->$media_type = new \stdClass();
             
             $doc->$media_type->description = "Create a definition that allows the publication of data from a $strategy_name based data structure.";

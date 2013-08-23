@@ -106,7 +106,7 @@ class RemoteResourceFactory extends AResourceFactory {
 
     public function createPUTDocumentation($doc){
 
-        $media_type = "application/remote";
+        $media_type = Doc::$MEDIA_TYPE_PREFIX . "remote";
         $doc->$media_type = new \stdClass();
 
         $remote_resource = new RemoteResourceCreator("", ""); 

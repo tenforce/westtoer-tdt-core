@@ -353,6 +353,7 @@ class ResourcesModel {
     }
 
     /**
+     * @Deprecated
      * Searches for a generic entry in the generic- create part of the documentation, independent of
      * how it is passed (i.e. csv == CSV )
      * @return The correct entry in the generic table ( csv would be changed with CSV )

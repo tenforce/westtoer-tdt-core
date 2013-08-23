@@ -122,7 +122,8 @@ class InstalledResourceFactory extends AResourceFactory {
     }
 
     private function getCreationTime($package, $resource) {
-        //if the object read is a directory and the configuration methods file exists,
+
+        //If the object read is a directory and the configuration methods file exists,
         //then add it to the installed packages
         $location = $this->getLocationofResource($package, $resource);
         if (file_exists($this->directory . $location)) {
@@ -174,7 +175,7 @@ class InstalledResourceFactory extends AResourceFactory {
      */
     public function createPUTDocumentation($doc) {    
                     
-        $media_type = "application/installed";
+        $media_type = Doc::$MEDIA_TYPE_PREFIX . "installed";
         $doc->$media_type = new \stdClass();
 
         $installedResource = new InstalledResourceCreator("", "");
