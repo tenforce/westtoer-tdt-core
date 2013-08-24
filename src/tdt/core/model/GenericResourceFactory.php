@@ -98,8 +98,7 @@ class GenericResourceFactory extends AResourceFactory {
                 $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
                 $doc->$package->$resourcename = new \stdClass();
                 $doc->$package->$resourcename->documentation = $documentation["doc"];
-                $doc->$package->$resourcename->generic_type = $documentation["type"];
-                $doc->$package->$resourcename->resource_type = "generic";
+                $doc->$package->$resourcename->source_type = $documentation["type"];                
 
                 // Get the strategy properties.
                 $genericId = $documentation["id"];

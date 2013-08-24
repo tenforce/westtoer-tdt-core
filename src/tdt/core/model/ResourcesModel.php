@@ -26,6 +26,8 @@ use tdt\core\utility\Config;
 use tdt\exceptions\TDTException;
 use RedBean_Facade as R;
 use JsonSchema\Validator;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class ResourcesModel {
 
@@ -140,6 +142,8 @@ class ResourcesModel {
         $resource = array_pop($pieces);
 
         $media_type = $parameters["media_type"];
+        $content_type = explode('+', $media_type);
+        $media_type = array_shift($content_type);
         unset($parameters["media_type"]);        
                  
         $doc = $this->getDiscoveryDoc();
@@ -150,8 +154,11 @@ class ResourcesModel {
 
         $create_params = $doc->resources->definitions->methods->put->mediaType->$media_type->parameters;
         
-        // Exctract the source_type of the media-type
+        // Exctract the source_type of the media-type       
+
         $source_type = explode('/', $media_type);
+        $source_type = end($source_type);
+        $source_type = explode('.', $source_type);
         $source_type = strtolower($source_type[1]);            
 
         $required_parameters = array();
@@ -172,7 +179,8 @@ class ResourcesModel {
         // Check if there are nonexistent parameters being passed.
         foreach(array_keys($parameters) as $key){
             if(!in_array(strtolower($key), array_keys(array_change_key_case($create_params)))){                
-                $this->throwException(452, array("The parameter $key is non existent for the given type of resource."));
+                $this->logInfo("While creating a resource definition, the given parameter $key is non existent for the given type of resource and will be ignored.");
+                unset($parameters[$key]);
             }
         }
 
@@ -220,6 +228,12 @@ class ResourcesModel {
             $this->throwException(500, array("Error whilst adding the resource: " . $ex->getMessage()));
         }
 
+    }
+
+    private function logInfo($info){
+        $log = new Logger('error_handler');        
+        $log->pushHandler(new StreamHandler(Config::get("general", "logging", "path") . "/log_". date('Y-m-d') . ".txt", Logger::INFO));
+        $log->addInfo($info);
     }
 
     public function fatal_error_handler(){

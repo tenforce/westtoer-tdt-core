@@ -178,6 +178,7 @@ class Doc {
 
             // Add the DCAT documentation.
             $doc->resources->info->resources->dcat = new \stdClass();
+            $doc->resources->info->resources->dcat->methods = new \stdClass();
             $doc->resources->info->resources->dcat->methods->get = new \stdClass();
             $doc->resources->info->resources->dcat->methods->get->httpMethod = "GET";
             $doc->resources->info->resources->dcat->methods->get->path = "/info/dcat";

@@ -112,7 +112,7 @@ class InstalledResourceFactory extends AResourceFactory {
                     include_once($this->directory . $location);
                     $doc->$package->$resourcename->documentation = $classname::getDoc();
                     $doc->$package->$resourcename->example_uri = $example_uri;
-                    $doc->$package->$resourcename->resource_type = "installed";
+                    $doc->$package->$resourcename->source_type = "installed";
                     $doc->$package->$resourcename->location = $location;
                     $doc->$package->$resourcename->classname = $classname;
                 }

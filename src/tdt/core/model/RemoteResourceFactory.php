@@ -200,7 +200,7 @@ class RemoteResourceFactory extends AResourceFactory {
 
         $remoteResource->resource = $resource;
         $remoteResource->base_url = $result["url"];
-        $remoteResource->resource_type = "remote";
+        $remoteResource->source_type = "remote";
         if (isset($data[$resource]->parameters)) {
             $remoteResource->parameters = $data[$resource]->parameters;
         } else {
