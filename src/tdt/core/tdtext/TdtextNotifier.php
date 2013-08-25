@@ -6,10 +6,35 @@
  * It will observe all the events happening, will investigate them and it will notify all instances of certain interfaces in the tdtext namespace.
  */
 namespace tdt\core\tdtext;
+use tdt\core\utility\Config;
 
 class TdtextNotifier {
     private static $me;
     private $extensions;
+
+    private $interfaces = array(
+        "initiated" => array(
+            "class" => "IAfterInitialization",
+            "method" => "execute"
+        ),
+        "definitions_loaded" => array(
+            "class" => "IDefinitionsEditor",
+            "method" => "editDefinitions"
+        ),
+        "routes_loaded" => array(
+            "class" => "IRoutesEditor",
+            "method" => "editRoutes"
+        ),
+        "formatters_loaded" => array(
+            "class" => "IFormattersEditor",
+            "method" => "editFormatters"
+        ),
+        "extraction_completed" => array(
+            "class" => "ITransformer",
+            "method" => "transform"
+        )
+    );
+
 
     private function __construct(){
     }
@@ -37,16 +62,19 @@ class TdtextNotifier {
      * This is the method that observes everything
      */
     public function update($eventname, &$info){
-        switch($eventname){
-            case "routes_ready" :
-//                echo "routes are loaded";
-                break;
-            case "":
-                break;
-            default:
-//                echo "unknown eventname given";
+        
+        $classes = Config::get("tdtext","classes");
+        //get all interfaces from the extensions
+        foreach($classes as $class){
+            if(class_exists($class)){
+                $implements = class_implements($class);
+                if(isset($this->interfaces[$eventname]) && in_array("tdt\\core\\tdtext\\" . $this->interfaces[$eventname]["class"], $implements)){
+                    $methodname = $this->interfaces[$eventname]["method"];
+                    $ext = new $class();
+                    $ext->$methodname($info);
+                }
+            }
         }
-//        var_dump($info);
     }
     
 

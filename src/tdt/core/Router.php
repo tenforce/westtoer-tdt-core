@@ -59,7 +59,7 @@ class Router {
 
         $allroutes = $this->routes;
 
-        $tdtext->update("routes_ready", $allroutes);
+        $tdtext->update("routes_loaded", $allroutes);
 
         // Only keep the routes that use the requested HTTP method
         $unsetkeys = preg_grep("/^" . strtoupper($_SERVER['REQUEST_METHOD']) . "/", array_keys($allroutes), PREG_GREP_INVERT);

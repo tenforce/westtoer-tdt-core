@@ -2,26 +2,35 @@
 
 namespace tdt\core\tdtext;
 
-abstract class AScraper implements IDefinitionsEditor, IRouteEditor {
+abstract class AScraper implements IDefinitionsEditor, IRoutesEditor {
 
     /**
      * @param $resourceidentifier the path of the 
      */
-    public function __construct($resourceidentifier){
-        $this->resourceidentifier = $resourceidentifier;  
+    public function __construct(){
+        $this->resourceidentifier = $this->getID();
     }
+
+    public abstract function getID();
+    
 
     /**
      * @override
      */
     public function editRoutes(&$routes){
-        $routes[$resourceidentifier] = get_class($this);
+        $routes["GET | " . $this->resourceidentifier] = get_class($this);
+    }
+
+    public function GET(){
+        $parameters = $_GET;
+        
+        echo $this->read($parameters);
     }
 
     public function editDefinitions(&$definitions){
         //TODO: edit definitions so that our definition is included
-//        $package = 
-        $definitions[$package][$path] = "test/scraper";
+        
+        //$definitions[$package][$path] = "test/scraper";
         
     }
 

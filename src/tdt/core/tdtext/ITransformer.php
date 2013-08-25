@@ -8,5 +8,5 @@ interface ITransformer {
     * @param $resourceconfiguration contains the identifier of a resource and the configuration
     * @param $object is the data object
     */
-    abstract function transform($resourceconfiguration, &$object);
+    function transform($resourceconfiguration, &$object);
 }
