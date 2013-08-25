@@ -8,8 +8,9 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use tdt\pages\Generator;
 use tdt\core\tdtext\TdtextNotifier;
-
-
+use JsonSchema\Validator;
+use RedBean_Facade as R;
+use tdt\exceptions\TDTException;
 class Router {
 
     public $routes = array(
@@ -31,7 +32,7 @@ class Router {
                 foreach ($validator->getErrors() as $error) {
                     $error_string .= "Validation for the json schema didn't validate: [".$error['property'] . "] => " . $error['message'] . "\n";
                 }    
-                $this->throwException(500, array("The given configuration file for the resource model does not validate. Violations are \n $error_string"));;        
+                throw new TDTException(500, array("The given configuration file for the resource model does not validate. Violations are \n $error_string"));;        
             }
 
             Config::setConfig($config);
@@ -44,7 +45,9 @@ class Router {
 
     public function run(){
         $tdtext = TdtextNotifier::getInstance();
-        $tdtext->update("initiated", Config::getConfigArray());
+        $configarray = Config::getConfigArray();
+        
+        $tdtext->update("initiated", $configarray);
 
         $allroutes = $this->routes;
 
@@ -68,17 +71,18 @@ class Router {
         try {
             // This function will do the magic.
             Glue::stick($routes);
-        } catch (Exception $e) {
+            
+        } catch (\Exception $e) {
 
             // Instantiate a Logger
             $log = new Logger('router');
-            $log->pushHandler(new StreamHandler(app\core\Config::get("general", "logging", "path") . "/log_" . date('Y-m-d') . ".txt", Logger::ERROR));
+            $log->pushHandler(new StreamHandler(\tdt\core\utility\Config::get("general", "logging", "path") . "/log_" . date('Y-m-d') . ".txt", Logger::ERROR));
 
             // Generator to generate an error page
             $generator = new Generator();
             $generator->setTitle("The DataTank");
 
-            if($e instanceof tdt\exceptions\TDTException){
+            if($e instanceof \tdt\exceptions\TDTException){
                 // DataTank error
                 $log->addError($e->getMessage());
                 set_error_header($e->getCode(), $e->getShort());
@@ -96,6 +100,7 @@ class Router {
 
             exit(0);
         }
+        
         
     }
 

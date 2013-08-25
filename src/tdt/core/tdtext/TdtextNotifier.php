@@ -22,7 +22,7 @@ class TdtextNotifier {
         $this->extensions = $extensions;
     }
 
-    public function getInstance(){
+    public static function getInstance(){
         if(!isset(self::$me)){
             self::$me = new TdtextNotifier();
         }
