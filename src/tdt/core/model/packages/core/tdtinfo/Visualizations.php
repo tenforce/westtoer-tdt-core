@@ -3,13 +3,13 @@
 /**
  * Returns all visualizations in TDT
  *
- * @package The-Datatank/packages/TDTInfo
+ * @package The-Datatank/packages/tdtinfo
  * @copyright (C) 2011 by iRail vzw/asbl
  * @license AGPLv3
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\TDTInfo;
+namespace tdt\core\model\packages\core\tdtinfo;
 
 use tdt\core\model\Doc;
 use tdt\core\model\resources\read\AReader;

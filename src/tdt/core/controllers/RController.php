@@ -29,7 +29,9 @@ class RController extends AController {
     }
 
     public function GET($matches) {
-
+        if(!isset($matches["format"])){
+            $matches["format"] = "about";
+        }
         //always required: a package and a resource.
         $packageresourcestring = $matches["packageresourcestring"];
         $packageresourcestring = strtolower($packageresourcestring);
@@ -88,9 +90,9 @@ class RController extends AController {
 
             $resultObject = new \stdClass();
             $resultObject->$package = $linkObject;
-            //This will create an instance of a factory depending on which format is set
-
+            //This will create an instance of a factory depending on which format is set            
             $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+            
             $formatter->execute($package,$resultObject);
 
             exit();
@@ -167,6 +169,7 @@ class RController extends AController {
         }
 
         // get the according formatter from the factory
+        
         $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
         $formatter->execute($RESTresource,$result);
     }

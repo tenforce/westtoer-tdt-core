@@ -39,12 +39,12 @@ class TdtextNotifier {
     public function update($eventname, &$info){
         switch($eventname){
             case "routes_ready" :
-                echo "routes are loaded";
+//                echo "routes are loaded";
                 break;
             case "":
                 break;
             default:
-                echo "unknown eventname given";
+//                echo "unknown eventname given";
         }
 //        var_dump($info);
     }

@@ -44,7 +44,6 @@ class CoreResourceFactory extends AResourceFactory {
         //ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
             $package = strtolower($package);            
-
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
             }

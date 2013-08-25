@@ -15,14 +15,14 @@
  * 127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"
  *
  *
- * @package The-Datatank/packages/TDTInfo
+ * @package The-Datatank/packages/tdtinfo
  * @copyright (C) 2011 by iRail vzw/asbl
  * @license AGPLv3
  * @author Pieter Colpaert   <pieter@iRail.be>
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\TDTInfo;
+namespace tdt\core\model\packages\core\tdtinfo;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
@@ -30,7 +30,7 @@ use tdt\core\utility\Config;
 use tdt\core\utility\ApacheLogParser;
 use tdt\cache\Cache;
 
-class TDTInfoStatistics extends AReader {
+class Statistics extends AReader {
 
     private $resourcestring = "TDTAdmin/Resources";
     private $date = "";
