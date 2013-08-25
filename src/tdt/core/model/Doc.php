@@ -23,6 +23,9 @@ class Doc {
     private $hostname;
     private $subdir;
 
+    public static $MEDIA_TYPE_PREFIX = "application/tdt.";
+    public static $MEDIA_TYPE_SUFFIX = "";
+
     private $dcat_namespaces = array(
         "dcat" => "http://www.w3.org/ns/dcat#",
         "dct"  => "http://purl.org/dc/terms/",
@@ -30,7 +33,6 @@ class Doc {
         "rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
         "owl"  => "http://www.w3.org/2002/07/owl#",
     );
-
 
     public function __construct() {
         $this->hostname = Config::get("general", "hostname");
@@ -133,8 +135,9 @@ class Doc {
             // Fill in the put method of the definition resource.
             $doc->resources->definitions->methods->put = new \stdClass();
             $doc->resources->definitions->methods->put->httpMethod = "PUT";
+            $doc->resources->definitions->methods->put->contentType = "{mediaType}+" . "[x-www-form-urlencoded|json]"; 
             $doc->resources->definitions->methods->put->path = "/definitions/{identifier}";
-            $doc->resources->definitions->methods->put->description = "Add a resource definition identified by {identifier} that allows the publication of data. The identifier has to exist out of 1 or more collection identifier and 1 resource identifier (e.g. city/statistics/demography). Pass the media type in the Content-Type header and fill in the corresponding parameters.";
+            $doc->resources->definitions->methods->put->description = "Add a resource definition identified by {identifier} that allows the publication of data. The identifier has to exist out of 1 or more collection identifier and 1 resource identifier (e.g. city/statistics/demography).";
 
             $doc->resources->definitions->methods->put->mediaType = new \stdClass();
             foreach ($factories as $factory) {
@@ -146,6 +149,12 @@ class Doc {
             $doc->resources->definitions->methods->delete->httpMethod = "DELETE";
             $doc->resources->definitions->methods->delete->path = "/definitions/{identifier}";
             $doc->resources->definitions->methods->delete->description = "Remove a resource definition identified by the {identifier}, the corresponding uri that publishes the data will also be deleted.";
+
+            // Fill in the get method of the definition resource.
+            $doc->resources->definitions->methods->get = new \stdClass();
+            $doc->resources->definitions->methods->get->httpMethod = "GET";
+            $doc->resources->definitions->methods->get->path = "/definitions/{identifier}";
+            $doc->resources->definitions->methods->get->description = "Retrieve a resource definition identified by the {identifier}, if no {identifier} is given the entire list of definitions is returned.";            
 
             // The info section of the discovery document.
             $doc->resources->info = new \stdClass();
@@ -169,6 +178,7 @@ class Doc {
 
             // Add the DCAT documentation.
             $doc->resources->info->resources->dcat = new \stdClass();
+            $doc->resources->info->resources->dcat->methods = new \stdClass();
             $doc->resources->info->resources->dcat->methods->get = new \stdClass();
             $doc->resources->info->resources->dcat->methods->get->httpMethod = "GET";
             $doc->resources->info->resources->dcat->methods->get->path = "/info/dcat";

@@ -19,6 +19,8 @@ use app\core\Config;
 
 class CUDController extends AController {
 
+    private $supported_content = array("json", "x-www-form-urlencoded");
+
     public function __construct() {
         parent::__construct();
     }
@@ -91,7 +93,11 @@ class CUDController extends AController {
         $HTTPheaders = getallheaders();
         if (!empty($HTTPheaders["Content-Type"])){
 
-            $media_type = $HTTPheaders["Content-Type"];            
+            $media_type = $HTTPheaders["Content-Type"];   
+            $content_type = explode('+', $media_type);
+            $media_type = array_shift($content_type);
+            $content_type = array_shift($content_type);
+
             $discovery = $model->getDiscoveryDoc();
             $media_types = $discovery->resources->definitions->methods->put->mediaType;
             $media_types = array_keys(get_object_vars($media_types));
@@ -104,7 +110,20 @@ class CUDController extends AController {
             $this->throwException(452, array("The content-type didn't contain a media type. Check out our discovery document for a list of available media types."));
         }
         
-        parse_str(file_get_contents("php://input"), $params);
+        if ($content_type == "json") { 
+            $json_string = file_get_contents("php://input");
+            $params = json_decode($json_string,true);
+
+            // Check if the object is wrapped or not (e.g. are the parameters already in the object, or are these wrapped.)
+            $param_object = array_shift($params);
+            if(is_array($param_object)){
+                $params = $param_object;
+            }else{
+                $params = json_decode($json_string,true);
+            }
+        } else {
+            parse_str(file_get_contents("php://input"), $params);
+        }        
         
         $params["media_type"] = $media_type;
         $RESTparameters = array();

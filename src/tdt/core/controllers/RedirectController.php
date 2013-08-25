@@ -18,7 +18,7 @@ class RedirectController extends AController {
 
     public function __construct() {
         parent::__construct();
-    }
+    }     
 
     function HEAD($matches) {
         $this->GET($matches);
