@@ -30,7 +30,7 @@ class RController extends AController {
 
     public function GET($matches) {
         if(!isset($matches["format"])){
-            $matches["format"] = "about";
+            $matches["format"] = "";
         }
         //always required: a package and a resource.
         $packageresourcestring = $matches["packageresourcestring"];

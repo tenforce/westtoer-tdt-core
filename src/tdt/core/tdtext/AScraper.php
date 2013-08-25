@@ -18,13 +18,26 @@ abstract class AScraper implements IDefinitionsEditor, IRoutesEditor {
      * @override
      */
     public function editRoutes(&$routes){
-        $routes["GET | " . $this->resourceidentifier] = get_class($this);
+        $routes["GET | " . $this->resourceidentifier . '\.?(?P<format>[^?]+)?.*\??(.*)'] = get_class($this);
     }
 
-    public function GET(){
+    public function GET($matches){
+        if(!isset($matches["format"])){
+            $matches["format"] = "";
+        }
+        
         $parameters = $_GET;
         
-        echo $this->read($parameters);
+        $o = $this->read($parameters);
+        if(!is_array($o) && !is_object($o)){
+            $new = new \stdClass();
+            $new->string = $o;
+            $o = $new;
+        }   
+
+        $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+        $formatter->execute($this->getID(),$o);
+
     }
 
     public function editDefinitions(&$definitions){
