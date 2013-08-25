@@ -3,7 +3,6 @@
 /**
  * This is the model for our application. You can access everything from here
  *
- * @package The-Datatank/model
  * @copyright (C) 2011 by iRail vzw/asbl
  * @license AGPLv3
  * @author Pieter Colpaert
@@ -50,29 +49,7 @@ class ResourcesModel {
         register_shutdown_function(array($this,"fatal_error_handler"));
     }
 
-    public static function getInstance(array $config = array()) {
-
-        if (count($config) > 0) {
-
-            $config_object = json_decode(json_encode($config)); // need the config to be an object so we can validate for required properties
-            $schema = file_get_contents("configuration-schema.json",true);
-
-            $validator = new Validator();
-            $validator->check($config_object, json_decode($schema));
-
-            if (!$validator->isValid()) {
-
-                $error_string = "";
-                
-                foreach ($validator->getErrors() as $error) {
-                    $error_string .= "Validation for the json schema didn't validate: [".$error['property'] . "] => " . $error['message'] . "\n";
-                }    
-                $this->throwException(500, array("The given configuration file for the resource model does not validate. Violations are \n $error_string"));;        
-            }
-
-            Config::setConfig($config);
-        }
-        R::setup(Config::get("db", "system") . ":host=" . Config::get("db", "host") . ";dbname=" . Config::get("db", "name"), Config::get("db", "user"), Config::get("db", "password"));
+    public static function getInstance() {
         if (!isset(self::$instance)) {
             self::$instance = new ResourcesModel();
         }

@@ -55,19 +55,19 @@ The model folder is one of the largest in the entire structure. It allows in fun
 the functionality of CRUD operations and provides an interface on it, ready for other classes to use. What will happen most of the time is that a controller performs its logic given a certain URL, then call upon
 the functionality of the model/ResourcesModel for further handling.
 
-> #### filters
+#### filters
 
 > This folders contains some logic to apply small filters to data.
 
-> #### packages
+#### packages
 
 > This folders contains resources that are considered _core_ _resources_. These resources provide information about the tdt/core and are default accessible resources when the core is installed.
 
-> #### resources
+#### resources
 
 > This folder contains classes that perform further CRUD logic for a given definition of a resource.
 
-> #### semantics
+#### semantics
 
 > This class contains code that allows for semantic operations. Currently this hasn't been tested just yet. It's purpose is to allow for semantic output, and probably will be separated into the tdt/formatters repository.
 
