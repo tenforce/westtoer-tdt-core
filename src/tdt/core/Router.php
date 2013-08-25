@@ -1,6 +1,6 @@
 <?php
 
-namespace tdt\core\Router;
+namespace tdt\core;
 
 use tdt\core\utility\Glue;
 use tdt\core\utility\Config;
