@@ -46,7 +46,7 @@ class TdtextNotifier {
             default:
                 echo "unknown eventname given";
         }
-        var_dump($info);
+//        var_dump($info);
     }
     
 

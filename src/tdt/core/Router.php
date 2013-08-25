@@ -14,7 +14,15 @@ use tdt\exceptions\TDTException;
 class Router {
 
     public $routes = array(
-        "/" => "tdt\\core\\controllers\\DocumentationController"
+        "GET | /" => "tdt\\core\\controllers\\DocumentationController",
+        "GET | (?P<packageresourcestring>.*)" => "tdt\\core\\controllers\\RController",
+        "GET | (?P<packageresourcestring>.*)\\.(?P<format>[^?]+).*\\??(.*)" => "tdt\\core\\controllers\\RController",
+        "GET | TDTAdmin/Resources/?(?P<packageresourcestring>.*)" => "tdt\\core\\controllers\\CUDController",
+        "PUT | TDTAdmin/Resources/?(?P<packageresourcestring>.*)" => "tdt\\core\\controllers\\CUDController",
+        "DELETE | TDTAdmin/Resources/?(?P<packageresourcestring>.*)" => "tdt\\core\\controllers\\CUDController",
+        "PATCH | TDTAdmin/Resources/?(?P<packageresourcestring>.*)" => "tdt\\core\\controllers\\CUDController",
+        "GET | spectql(?P<query>/TDTAdmin/?.*)" => "tdt\\core\\controllers\\SPECTQLController",
+        "GET | spectql(?P<query>/.*)" => "tdt\\core\\controllers\\SPECTQLController"
     );
     
     public function __construct($config){
