@@ -30,4 +30,9 @@ abstract class AFormatter implements IFormattersEditor {
      * @param $object the object to print
      */
     abstract function printBody($resourceconfiguration, $parameters, $object);
+
+    /**
+     * Enable if the data is in a certain format or if other conditions are met
+     */
+    abstract public function isEnabled();
 }

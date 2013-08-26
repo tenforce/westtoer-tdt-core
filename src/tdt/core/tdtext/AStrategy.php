@@ -21,4 +21,9 @@ abstract class AStrategy implements IAvailableStrategiesEditor {
      * The resourceconfiguration contains the resourceidentifier and the config parameters (as defined by the getConfigParameters() function)
      */
     abstract function read($resourceconfiguration, $parameters);
+
+
+    public function isEnabled(){
+        return true;
+    }
 }

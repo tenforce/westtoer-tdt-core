@@ -1,9 +1,9 @@
 <?php
 /**
- * Against all odds, the TdtextNotifier is an Observer.
+ * TdtextNotifier forwards all the events to the right classes implementing the necessary interfaces
  * This is a singleton: as only one notifier will notify all actions
  *
- * It will observe all the events happening, will investigate them and it will notify all instances of certain interfaces in the tdtext namespace.
+ * @author Pieter Colpaert
  */
 namespace tdt\core\tdtext;
 use tdt\core\utility\Config;
@@ -16,6 +16,10 @@ class TdtextNotifier {
         "initiated" => array(
             "class" => "IAfterInitialization",
             "method" => "execute"
+        ),
+        "object_ready" => array(
+            "class" => "ITransformer",
+            "method" => "transform"
         ),
         "definitions_loaded" => array(
             "class" => "IDefinitionsEditor",
@@ -53,10 +57,6 @@ class TdtextNotifier {
         }
         return self::$me;
     }
-    
-    public function getAllExtensions($interface_name){
-//        var_dump(get_declared_classes());
-    }
 
     /**
      * This is the method that observes everything
@@ -64,6 +64,7 @@ class TdtextNotifier {
     public function update($eventname, &$info){
         
         $classes = Config::get("tdtext","classes");
+        
         //get all interfaces from the extensions
         foreach($classes as $class){
             if(class_exists($class)){
@@ -71,11 +72,12 @@ class TdtextNotifier {
                 if(isset($this->interfaces[$eventname]) && in_array("tdt\\core\\tdtext\\" . $this->interfaces[$eventname]["class"], $implements)){
                     $methodname = $this->interfaces[$eventname]["method"];
                     $ext = new $class();
-                    $ext->$methodname($info);
+                    //$ext->request =  // add info about the current request
+                    if($ext->isEnabled()){
+                        $ext->$methodname($info);
+                    }
                 }
             }
         }
     }
-    
-
 }

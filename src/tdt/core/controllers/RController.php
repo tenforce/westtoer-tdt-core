@@ -91,7 +91,7 @@ class RController extends AController {
             $resultObject = new \stdClass();
             $resultObject->$package = $linkObject;
             //This will create an instance of a factory depending on which format is set            
-            $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+            $formatter = new \tdt\core\model\Formatter(strtoupper($matches["format"]));
             
             $formatter->execute($package,$resultObject);
 
@@ -168,9 +168,13 @@ class RController extends AController {
             }
         }
 
-        // get the according formatter from the factory
+        //Tell the extensions the object is ready
+        $tdtext = \tdt\core\tdtext\TdtextNotifier::getInstance();
+        $tdtext->update("object_ready",$result);
         
-        $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+
+        // get the according formatter from the factory
+        $formatter = new \tdt\core\model\Formatter(strtoupper($matches["format"]));
         $formatter->execute($RESTresource,$result);
     }
 
@@ -303,7 +307,7 @@ class RController extends AController {
                 }
             }
 
-            $formatter = \tdt\formatters\Formatter($matches["format"]);
+            $formatter = \tdt\core\model\Formatter($matches["format"]);
             $formatter->printHeader();
             exit();
         }
@@ -388,7 +392,7 @@ class RController extends AController {
         // get the according formatter from the factory
         /*$printer = $this->formatterfactory->getPrinter($resourcename, $result);
         $printer->printHeader();*/
-        $formatter = \tdt\formatters\Formatter($matches["format"]);
+        $formatter = \tdt\core\model\Formatter($matches["format"]);
         $formatter->printHeader();
     }
 

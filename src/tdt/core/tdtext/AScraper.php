@@ -14,6 +14,10 @@ abstract class AScraper implements IDefinitionsEditor, IRoutesEditor {
     public abstract function getID();
     
 
+    public function isEnabled(){
+        return true;
+    }
+    
     /**
      * @override
      */
@@ -35,7 +39,7 @@ abstract class AScraper implements IDefinitionsEditor, IRoutesEditor {
             $o = $new;
         }   
 
-        $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+        $formatter = new \tdt\core\model\Formatter(strtoupper($matches["format"]));
         $formatter->execute($this->getID(),$o);
 
     }
