@@ -14,12 +14,47 @@ namespace tdt\core\strategies;
 use tdt\core\model\resources\AResourceStrategy;
 use tdt\exceptions\TDTException;
 use tdt\core\utility\Request;
+use app\core\Config;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class JSON extends AResourceStrategy {
 
     public function read(&$configObject, $package, $resource) {
         $data = Request::http($configObject->uri);
-        return json_decode($data->data);
+
+        if(empty($configObject->pk)){
+            return json_decode($data->data);
+        }else{
+            $pk = $configObject->pk;
+            $object = json_decode($data->data);
+            $result_object = array();
+            if(is_array($object)){
+                
+                foreach($object as $entry){
+                    if(is_array($entry)){
+                        $pk_value = $entry[$pk];                        
+                    }else{
+                        $pk_value = $entry->$pk;
+                    }
+                    
+                    // Log double primary key occurences.
+                    $log = new Logger('JSON');
+                    $log->pushHandler(new StreamHandler(Config::get("general", "logging", "path") . "/log_" . date('Y-m-d') . ".txt", Logger::INFO));
+                    $log->addInfo("The primary key $pk_value, already exists, overwriting it with the new value.");
+
+                    $result_object[$pk_value] = $entry;
+                }
+                return $result_object;
+            }else{
+
+                $log = new Logger('JSON');
+                $log->pushHandler(new StreamHandler(Config::get("general", "logging", "path") . "/log_" . date('Y-m-d') . ".txt", Logger::INFO));
+                $log->addInfo("A primary key was provided, but the json object was not an array. Returning JSON object as is.");
+                return $object;
+            }
+        }
+        
     }
 
     public function isValid($package_id, $generic_resource_id) {
@@ -34,10 +69,6 @@ class JSON extends AResourceStrategy {
         return true;
     }
 
-    public function documentCreateRequiredParameters() {
-        return array("uri");
-    }
-
     public function documentReadRequiredParameters() {
         return array();
     }
@@ -48,7 +79,14 @@ class JSON extends AResourceStrategy {
 
     public function documentCreateParameters() {
         return array(
-            "uri" => "The uri to the json document."
+            "uri" => array(
+                "description" => "The uri to the json document.",
+                "required" => true,
+            ),
+            "pk" => array(
+                "description" => "The primary key to which objects are mapped to, this can only be done with an json array of objects.",
+                "required" => true,
+            ),
         );
     }
 

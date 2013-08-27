@@ -29,40 +29,62 @@ class CSV extends ATabularData implements IFilter{
 
     /**
      * The parameters returned are required to make this strategy work.
-     * @return array with parameter => documentation pairs
+     * @return array with parameter => description pairs
      */
     public function documentCreateRequiredParameters() {
-        return array("uri");
+        //return array("uri");
     }
 
     /**
      * @deprecated
      */
     public function documentUpdateParameters() {
-        $this->parameters["uri"] = "The URI to the CSV file.";
-        $this->parameters["PK"] = "The primary key of an entry. This must be the name of an existing column name in the CSV file.";
-        $this->parameters["has_header_row"] = "If the CSV file contains a header row with the column name, pass 1 as value, if not pass 0. Default value is 1.";
-        $this->parameters["delimiter"] = "The delimiter which is used to separate the fields that contain values, default value is a comma.";
-        $this->parameters["start_row"] = "The number of the row (rows start at number 1) at which the actual data starts; i.e. if the first two lines are comment lines, your start_row should be 3. Default is 1.";
+
+        
+
         return $this->parameters;
     }
 
     /**
      * The parameters ( array keys ) returned all of the parameters that can be used to create a strategy.
-     * @return array with parameter => documentation pairs
+     * @return array with parameter => description pairs
      */
-    public function documentCreateParameters() {        
-        $this->parameters["uri"] = "The URI to the CSV file.";
-        $this->parameters["PK"] = "The primary key of an entry. This must be the name of an existing column name in the CSV file.";
-        $this->parameters["has_header_row"] = "If the CSV file contains a header row with the column name, pass 1 as value, if not pass 0. Default value is 1.";
-        $this->parameters["delimiter"] = "The delimiter which is used to separate the fields that contain values, default value is a comma.";
-        $this->parameters["start_row"] = "The number of the row (rows start at number 1) at which the actual data starts; i.e. if the first two lines are comment lines, your start_row should be 3. Default is 1.";
+    public function documentCreateParameters() {   
+
+        $this->parameters["uri"] = array(
+            "description" => "The URI to the CSV file.",
+            "required" => true,
+        ); 
+
+        $this->parameters["PK"] = array(
+            "description" => "The primary key of an entry. This must be the name of an existing column name in the CSV file.",
+            "required" => false,
+        );
+
+        $this->parameters["has_header_row"] = array(
+            "description" => "If the CSV file contains a header row with the column name, pass 1 as value, if not pass 0.",
+            "required" => false,
+            "default_value" => 1,
+        );
+
+        $this->parameters["delimiter"] = array( 
+            "description" => "The delimiter which is used to separate the fields that contain values, default value is a comma.",
+            "required" => false,
+            "default_value" => ",",
+        );
+
+        $this->parameters["start_row"] = array(
+            "description" => "The number of the row (rows start at number 1) at which the actual data starts; i.e. if the first two lines are comment lines, your start_row should be 3.",
+            "required" => false,
+            "default_value" => 1,
+        );        
+
         return $this->parameters;
     }
 
     /**
-     * Returns an array with parameter => documentation pairs that can be used to read a CSV resource.
-     * @return array with parameter => documentation pairs
+     * Returns an array with parameter => description pairs that can be used to read a CSV resource.
+     * @return array with parameter => description pairs
      */
     public function documentReadParameters() {
         $page_size = AResourceStrategy::$DEFAULT_PAGE_SIZE;

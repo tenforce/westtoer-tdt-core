@@ -57,23 +57,14 @@ abstract class AReader {
      * @param array $parameters An array with the parameters passed with the GET request.
      */
     public function processParameters($parameters) {
-        /*
-         * set the parameters
-         */
+        // Set the parameters to the object.
         foreach ($parameters as $key => $value) {
             $this->setParameter($key, $value);
         }
     }
 
     abstract protected function setParameter($key, $value);
-
-    /**
-     * Override this function if you want to limit language support
-     */
-    public function supportedLanguages() {
-        return array();
-    }
-
+    
     /**
      * Asks a content negotiator class for a language. If the supported languages array is not empty, it will go for the most qualified one in that array.
      */

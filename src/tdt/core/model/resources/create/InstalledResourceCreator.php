@@ -21,8 +21,8 @@ class InstalledResourceCreator extends ACreator {
 
     private $directory;
 
-    public function __construct($package, $resource, $RESTparameters) {
-        parent::__construct($package, $resource, $RESTparameters);
+    public function __construct($package, $resource) {
+        parent::__construct($package, $resource);
 
         $this->directory = __DIR__ . "/../../packages/installed/";
     }
@@ -32,20 +32,19 @@ class InstalledResourceCreator extends ACreator {
      */
     public function documentParameters() {
         $parameters = parent::documentParameters();
-        $parameters["location"] = "The location, relative to the custom/packages folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.";
-        $parameters["classname"] = "The name of the class i.e. myinstalledresource.";
-        return $parameters;
-    }
 
-    /**
-     * This overrides the previous defined required parameters by ACreator. It needs $strategy to be an instance of a strategy. Therefor setParameter needs to have been called upon with a generic_type as argument.
-     */
-    public function documentRequiredParameters() {
-        $parameters = parent::documentRequiredParameters();
-        $parameters[] = "location";
-        $parameters[] = "classname";
+        $parameters["location"] = array(
+            "description" => "The location, relative to the model/packages/installed folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.",
+            "required" => true,
+        );
+
+        $parameters["classname"] = array(
+            "description" => "The name of the class i.e. myinstalledresource.",
+            "required" => true,
+        );
+
         return $parameters;
-    }
+    }   
 
     public function setParameter($key, $value) {
         // set the correct parameters, to the this class or the strategy we're sure that every key,value passed is correct
@@ -53,15 +52,12 @@ class InstalledResourceCreator extends ACreator {
     }
 
     /**
-     * execution method
-     * Preconditions:
-     * parameters have already been set.
-     */
-    public function create() {
-        /*
-         * Create the package and resource entities and create a generic resource entry.
-         * Then pick the correct strategy, and pass along the parameters!
-         */
+     * Create the resource definition.
+     */ 
+    public function create(){
+
+        // Create the package and resource entities and create a generic resource entry.
+        // Then pick the correct strategy, and pass along the parameters!
         // check if the location is legit        
         if (file_exists($this->directory . $this->location)) {            
             include_once($this->directory . $this->location);
@@ -85,5 +81,4 @@ class InstalledResourceCreator extends ACreator {
             throw new TDTException(452, array("The classname $this->classname doesn't exist on location installed/$this->location"), $exception_config);
         }
     }
-
 }

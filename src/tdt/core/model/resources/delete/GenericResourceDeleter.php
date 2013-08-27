@@ -16,9 +16,6 @@ use tdt\core\model\resources\GenericResource;
 
 class GenericResourceDeleter extends ADeleter {
 
-    /**
-     * execution method
-     */
     public function delete() {
 
         $resource = new GenericResource($this->package, $this->resource);
@@ -39,5 +36,3 @@ class GenericResourceDeleter extends ADeleter {
     }
 
 }
-
-?>

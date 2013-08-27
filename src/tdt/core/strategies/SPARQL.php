@@ -233,7 +233,7 @@ class SPARQL extends RDFXML {
 
     private function processParameters($query) {
         $param = $_GET;
-        //var_dump($param);
+
         $placeholders = array();        
 
         preg_match_all("/\\$\\{(.+?)\\}/", $query, $placeholders, PREG_SET_ORDER);
@@ -336,14 +336,6 @@ class SPARQL extends RDFXML {
         $log->addError($message);
     }
 
-    /**
-     * The parameters returned are required to make this strategy work.
-     * @return array with parameter => documentation pairs
-     */
-    public function documentCreateRequiredParameters() {
-        return array("endpoint", "query");
-    }
-
     public function documentReadRequiredParameters() {
         return array();
     }
@@ -353,11 +345,28 @@ class SPARQL extends RDFXML {
     }
 
     public function documentCreateParameters() {
+
         return array(
-            "endpoint" => "The URI of the SPARQL endpoint.",
-            "query" => "The SPARQL query",
-            "endpoint_user" => "Username for file behind authentication",
-            "endpoint_password" => "Password for file behind authentication"
+            "endpoint" => array(
+                "description" => "The URI of the SPARQL endpoint.",
+                "required" => true,
+                ),
+
+            "query" => array(
+                "description" => "The SPARQL query",
+                "required" => true,
+                ),
+
+            "endpoint_user" => array(
+                "description" => "Username for file behind authentication",
+                "required" => true,
+                ),
+
+            "endpoint_password" => array(
+                "description" => "Password for file behind authentication",
+                "required" => true,
+                ),
+
             );
     }
 

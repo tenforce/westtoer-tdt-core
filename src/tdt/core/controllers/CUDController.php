@@ -19,6 +19,8 @@ use app\core\Config;
 
 class CUDController extends AController {
 
+    private $supported_content = array("json", "x-www-form-urlencoded");
+
     public function __construct() {
         parent::__construct();
     }
@@ -72,27 +74,43 @@ class CUDController extends AController {
         $packageresourcestring = rtrim($packageresourcestring,"/");
         $pieces = explode("/", $packageresourcestring);
 
+        $model = ResourcesModel::getInstance(Config::getConfigArray());
+
         // Check for empty pieces.
         foreach($pieces as $piece){
             if($piece == ""){
-                $exception_config = array();
-                $exception_config["log_dir"] = Config::get("general", "logging", "path");
-                $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-                throw new TDTException(452, array("We found an empty piece in our package-resourcestring, passing a double / might be a the origin of this error. Passed package-resourcestring: $packageresourcestring"), $exception_config, $exception_config);
+                $this->throwException(452, array("We found an empty piece in our package-resourcestring, passing a double / 
+                    might be a the origin of this error. Passed package-resourcestring: $packageresourcestring"));               
             }
         }
 
-        //both package and resource set?
+        // Both package and resource set?
         if (count($pieces) < 2) {
-            $exception_config = array();
-            $exception_config["log_dir"] = Config::get("general", "logging", "path");
-            $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array($packageresourcestring), $exception_config, $exception_config);
+            $this->throwException(452, array("The identifier has to exist out of a minimum of two parts, identifier passed: $packageresourcestring"));
         }
-
-        //fetch all the PUT variables in one array
+        
+        // Fetch all the PUT variables in one array.
         $HTTPheaders = getallheaders();
-        if (isset($HTTPheaders["Content-Type"]) && $HTTPheaders["Content-Type"] == "application/json") {
+        if (!empty($HTTPheaders["Content-Type"])){
+
+            $media_type = $HTTPheaders["Content-Type"];   
+            $content_type = explode('+', $media_type);
+            $media_type = array_shift($content_type);
+            $content_type = array_shift($content_type);
+
+            $discovery = $model->getDiscoveryDoc();
+            $media_types = $discovery->resources->definitions->methods->put->mediaType;
+            $media_types = array_keys(get_object_vars($media_types));
+            
+            if(!in_array($media_type, $media_types)){
+                $this->throwException(452, array("The given media type, $media_type, was not found. Please check out the discovery document for a full list of available media types."));
+            }
+
+        }else {
+            $this->throwException(452, array("The content-type didn't contain a media type. Check out our discovery document for a list of available media types."));
+        }
+        
+        if ($content_type == "json") { 
             $json_string = file_get_contents("php://input");
             $params = json_decode($json_string,true);
 
@@ -105,19 +123,26 @@ class CUDController extends AController {
             }
         } else {
             parse_str(file_get_contents("php://input"), $params);
-        }
-
-        $model = ResourcesModel::getInstance(Config::getConfigArray());
+        }        
+        
+        $params["media_type"] = $media_type;
         $RESTparameters = array();
 
         $model->createResource($packageresourcestring, $params);
         header("Content-Location: " . $this->hostname . $this->subdir . $packageresourcestring);
 
-        //maybe the resource reinitialised the database, so let's set it up again with our config, just to be sure.
+        // Maybe the resource reinitialised the database, so let's set it up again with our config, just to be sure.
         $this->initializeDatabaseConnection();
 
-        //Clear the documentation in our cache for it has changed
+        // Clear the documentation in our cache for it has changed
         $this->clearCachedDocumentation();
+    }
+
+    private function throwException($code, $message = array()){
+        $exception_config = array();
+        $exception_config["log_dir"] = Config::get("general", "logging", "path");
+        $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
+        throw new TDTException($code, $message, $exception_config);   
     }
 
     /**

@@ -29,27 +29,47 @@ class DB extends ATabularData implements IFilter {
         parent::__construct();
         $this->parameters["columns"] = "An array that contains the name of the columns that are to be published, if an empty array is passed every column will be published. This array should be build as column_name => column_alias.";
     }
-
-    /**
-     * The parameters returned are required to make this strategy work.
-     * @return array with parameter => documentation pairs
-     */
-    public function documentCreateRequiredParameters() {
-        return array("db_type", "location", "db_table", "username", "password");
-    }
-
+   
     /**
      * The parameters ( array keys ) returned all of the parameters that can be used to create a strategy.
      * @return array with parameter => documentation pairs
      */
     public function documentCreateParameters() {
-        $this->parameters["username"] = "The username to connect to the database with. This is required except for SQLite engines.";
-        $this->parameters["password"] = "The password of the user to connect to the database. This is required except for SQLite engines.";
-        $this->parameters["db_name"] = "The database name, all except sqlite needs to fill in this parameter.";
-        $this->parameters["db_type"] = "The type of the database, current supported types are: MySQL";
-        $this->parameters["db_table"] = "The database table of which some or all fields will be published.";
-        $this->parameters["location"] = "The location of the database, for sqlite this will be the path towards the sqlite file, for all the other database types this will be the host on which the database is installed.";
-        $this->parameters["PK"] = "The primary key of an entry. This must be the name of an existing column name in the tabular resource.";
+        $this->parameters["username"] = array(
+            "description" => "The username to connect to the database with. This is required except for SQLite engines.",
+            "required" => true,
+        );
+
+        $this->parameters["password"] = array(
+            "description" => "The password of the user to connect to the database. This is required except for SQLite engines.",
+            "required" => true,
+        );
+
+        $this->parameters["db_name"] = array(
+            "description" => "The database name, all except sqlite needs to fill in this parameter.",
+            "required" => true,
+        );
+
+        $this->parameters["db_type"] = array(
+            "description" => "The type of the database, current supported types are: MySQL and PostgreSQL.",
+            "required" => true,
+        );
+
+        $this->parameters["db_table"] = array(
+            "description" => "The database table of which some or all fields will be published.",
+            "required" => true,
+        );
+
+        $this->parameters["location"] = array(
+            "description" => "The location of the database, for sqlite this will be the path towards the sqlite file, for all the other database types this will be the host on which the database is installed.",
+            "required" => true,
+        );
+
+        $this->parameters["PK"] = array(
+            "description" => "The primary key of an entry. This must be the name of an existing column name in the tabular resource.",
+            "required" => false,
+        );
+
         return $this->parameters;
     }
 

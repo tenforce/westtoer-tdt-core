@@ -16,7 +16,7 @@ use tdt\core\model\ResourcesModel;
 use tdt\core\utility\Config;
 use tdt\exceptions\TDTException;
 
-class TDTAdminResources extends AReader {
+class Resources extends AReader {
 
     public static function getParameters() {
         return array();

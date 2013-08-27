@@ -10,14 +10,14 @@
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\TDTInfo;
+namespace tdt\core\model\packages\core\tdtadmin;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
 use tdt\core\utility\Config;
 use tdt\exceptions\TDTException;
 
-class TDTInfoAdmin extends AReader {
+class Discovery extends AReader {
 
     public static function getParameters() {
         return array();
@@ -31,10 +31,10 @@ class TDTInfoAdmin extends AReader {
         //we don't have any parameters
     }
 
-    public function read() {
+    public function read() {        
         $resmod = ResourcesModel::getInstance(Config::getConfigArray());
         $result_object = $resmod->getAllAdminDoc();
-
+        
         foreach($this->RESTparameters as $param){
             if (is_object($result_object) && $this->isPropertySet($result_object,$param)) {
                 $param = $this->isPropertySet($result_object,$param);

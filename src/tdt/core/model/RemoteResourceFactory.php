@@ -44,8 +44,8 @@ class RemoteResourceFactory extends AResourceFactory {
         return $resources;
     }
 
-    public function createCreator($package, $resource, $parameters, $RESTparameters) {
-        $creator = new RemoteResourceCreator($package, $resource, $RESTparameters);
+    public function createCreator($package, $resource, $parameters) {
+        $creator = new RemoteResourceCreator($package, $resource);
         foreach ($parameters as $key => $value) {
             $creator->setParameter($key, $value);
         }
@@ -58,8 +58,8 @@ class RemoteResourceFactory extends AResourceFactory {
         return $reader;
     }
 
-    public function createDeleter($package, $resource, $RESTparameters) {
-        return new RemoteResourceDeleter($package, $resource, $RESTparameters);
+    public function createDeleter($package, $resource) {
+        return new RemoteResourceDeleter($package, $resource);
     }
 
     public function makeDoc($doc) {
@@ -97,27 +97,21 @@ class RemoteResourceFactory extends AResourceFactory {
         }
     }
 
-    public function makeDeleteDoc($doc) {
+    public function createDELETEDocumentation() {
         $d = new \stdClass();
-        $d->documentation = "You can delete every remote resource by sending a DELETE HTTP request to the resource definition located in TDTAdmin/Resources.";
-        if (!isset($doc->delete)) {
-            $doc->delete = new \stdClass();
-        }
-        $doc->delete->remote = new \stdClass();
-        $doc->delete->remote = $d;
+        $d->description = "Delete a remote source type definition.";
+        $d->httpMethod = "DELETE";       
+        return $d;
     }
 
-    public function makeCreateDoc($doc) {
-        //add stuff to create attribute in doc. No other parameters expected
-        $d = new \stdClass();
-        $d->documentation = "Creates a new remote resource by executing a HTTP PUT on an URL formatted like " . Config::get("general", "hostname") . Config::get("general", "subdir") . "packagename/newresource. The base_uri needs to point to another The DataTank instance.";
-        $resource = new RemoteResourceCreator("", "", array()); //make an empty object. In the end we only need a remote resource
-        $d->parameters = $resource->documentParameters();
-        $d->requiredparameters = $resource->documentRequiredParameters();
-        if (!isset($doc->create)) {
-            $doc->create = new \stdClass();
-        }
-        $doc->create->remote = $d;
+    public function createPUTDocumentation($doc){
+
+        $media_type = Doc::$MEDIA_TYPE_PREFIX . "remote";
+        $doc->$media_type = new \stdClass();
+
+        $remote_resource = new RemoteResourceCreator("", ""); 
+        $doc->$media_type->description = "Creates a new remote resource by executing a HTTP PUT on an URL formatted like " . Config::get("general", "hostname") . Config::get("general", "subdir") . "packagename/newresource. The base_uri needs to point to another The DataTank instance.";        
+        $doc->$media_type->parameters = $remote_resource->documentParameters();           
     }
 
     /*
@@ -127,7 +121,6 @@ class RemoteResourceFactory extends AResourceFactory {
      * every single call to this factory. If we receive a call
      * for another resource, we replace it by the newly asked factory.
      */
-
     private function fetchResourceDocumentation($package, $resource) {
         $result = DBQueries::getRemoteResource($package, $resource);
         if (sizeof($result) == 0) {
@@ -207,7 +200,7 @@ class RemoteResourceFactory extends AResourceFactory {
 
         $remoteResource->resource = $resource;
         $remoteResource->base_url = $result["url"];
-        $remoteResource->resource_type = "remote";
+        $remoteResource->source_type = "remote";
         if (isset($data[$resource]->parameters)) {
             $remoteResource->parameters = $data[$resource]->parameters;
         } else {
@@ -222,6 +215,44 @@ class RemoteResourceFactory extends AResourceFactory {
         return $remoteResource;
     }
 
-}
+    /**
+     * Create the API documentation of generic resources, structure is based on the
+     * google discovery API reference.
+     */ 
+    public function createAPIDoc($doc){
 
-?>
+        $resources = new \stdClass();
+
+        if(!empty($doc->resources)){
+            $resources = $doc->resources;
+        }else{
+            $doc->resources = $resources;
+        }    
+        
+        $resources->remote = new \stdClass();
+
+        $resources->remote->put = $this->createPUTDocumentation($doc);
+        $resources->remote->delete = $this->createDELETEDocumentation($doc);
+
+        $doc->resources = $resources;
+    }
+
+    public function createDCATDocumentation(){
+
+        $rdf_string = "";
+        foreach ($this->getAllResourceNames() as $package => $resourcenames) {
+            foreach ($resourcenames as $resourcename) {         
+
+                $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
+                $identifier = $package . "/" . $resourcename;
+                $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
+                $rdf_string .= "<$access_uri> a dcat:Dataset;";
+                $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+            }
+        }
+
+        return $rdf_string;
+    }
+
+}

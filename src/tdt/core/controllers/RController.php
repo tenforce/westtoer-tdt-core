@@ -44,7 +44,7 @@ class RController extends AController {
 
         $package = $result["packagename"];
         $RESTparameters = $result["RESTparameters"];
-
+        
         /**
          * Package can also be a part of an entire packagestring if this is the case then a list of links to the other subpackages will have to be listed
          */
