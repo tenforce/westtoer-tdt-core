@@ -23,16 +23,16 @@ class CoreResourceFactory extends AResourceFactory {
         $this->directory = __DIR__ . "/packages/core/";
         $this->namespace = "tdt\\core\\model\\packages\\core\\";
     }
-    
+
     protected function getAllResourceNames() {
         return array(
-                    "tdtinfo" => array("resources", "packages","admin", "formatters", "dcat"),
-                    "tdtadmin" => array("resources","docreset", "discovery")
+                    "info" => array("resources", "packages","admin", "formatters", "dcat"),
+                    "definitions" => array("resources","docreset", "discovery")
                 );
     }
-    
+
     public function createReader($package, $resource, $parameters, $RESTparameters) {
-        
+
         $classname = $this->namespace . $package . "\\"  . ucfirst($resource);
         $reader = new $classname($package, $resource, $RESTparameters);
         $reader->processParameters($parameters);
@@ -43,13 +43,13 @@ class CoreResourceFactory extends AResourceFactory {
 
         //ask every resource we have for documentation
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
-            $package = strtolower($package);            
+            $package = strtolower($package);
 
             if (!isset($doc->$package)) {
                 $doc->$package = new \stdClass();
             }
 
-            foreach ($resourcenames as $resourcename) {                
+            foreach ($resourcenames as $resourcename) {
                 $resourcename = strtolower($resourcename);
                 $resource_adjusted = ucfirst($resourcename);
                 $classname = $this->namespace . $package . "\\" . $resource_adjusted;
@@ -105,26 +105,26 @@ class CoreResourceFactory extends AResourceFactory {
 
         $rdf_string = "";
         foreach ($this->getAllResourceNames() as $package => $resourcenames) {
-            foreach ($resourcenames as $resourcename) {         
+            foreach ($resourcenames as $resourcename) {
 
                 $documentation = DBQueries::getGenericResourceDoc($package, $resourcename);
                 $identifier = $package . "/" . $resourcename;
                 $access_uri = Config::get("general", "hostname") . Config::get("general", "subdir") . $identifier;
                 $rdf_string .= "<$access_uri> a dcat:Dataset;";
                 $rdf_string .= " dct:title \"" . $documentation["doc"] . "\" ;";
-                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";                
+                $rdf_string .= " dcat:distribution \"" . $access_uri . "\" . ";
             }
         }
 
         return $rdf_string;
     }
 
-    public function createCreator($package, $resource, $parameters) {        
+    public function createCreator($package, $resource, $parameters) {
     }
 
-    public function createDeleter($package, $resource) {        
+    public function createDeleter($package, $resource) {
     }
-      
-    public function createPUTDocumentation($doc){  
+
+    public function createPUTDocumentation($doc){
     }
 }

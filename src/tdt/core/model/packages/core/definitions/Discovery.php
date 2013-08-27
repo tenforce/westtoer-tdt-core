@@ -10,7 +10,7 @@
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\tdtadmin;
+namespace tdt\core\model\packages\core\definitions;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
@@ -31,10 +31,10 @@ class Discovery extends AReader {
         //we don't have any parameters
     }
 
-    public function read() {        
+    public function read() {
         $resmod = ResourcesModel::getInstance(Config::getConfigArray());
         $result_object = $resmod->getAllAdminDoc();
-        
+
         foreach($this->RESTparameters as $param){
             if (is_object($result_object) && $this->isPropertySet($result_object,$param)) {
                 $param = $this->isPropertySet($result_object,$param);

@@ -22,7 +22,7 @@
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\TDTInfo;
+namespace tdt\core\model\packages\core\info;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
@@ -30,7 +30,7 @@ use tdt\core\utility\Config;
 use tdt\core\utility\ApacheLogParser;
 use tdt\cache\Cache;
 
-class TDTInfoStatistics extends AReader {
+class Statistics extends AReader {
 
     private $resourcestring = "TDTAdmin/Resources";
     private $date = "";

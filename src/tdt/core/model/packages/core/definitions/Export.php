@@ -9,7 +9,7 @@
  * @author Jan Vansteenlandt
  */
 
-namespace tdt\core\model\packages\core\TDTAdmin;
+namespace tdt\core\model\packages\core\definitions;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;

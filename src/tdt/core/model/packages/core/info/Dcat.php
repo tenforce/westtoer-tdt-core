@@ -10,7 +10,7 @@
  * @author Jan Vansteenlandt <jan@iRail.be>
  */
 
-namespace tdt\core\model\packages\core\TDTInfo;
+namespace tdt\core\model\packages\core\info;
 
 use tdt\core\model\resources\read\AReader;
 use tdt\core\model\ResourcesModel;
@@ -31,7 +31,7 @@ class Dcat extends AReader {
 
     public function read() {
         $resmod = ResourcesModel::getInstance(Config::getConfigArray());
-        return $resmod->getDCATDocumentation();        
+        return $resmod->getDCATDocumentation();
     }
 
     public static function getDoc() {
