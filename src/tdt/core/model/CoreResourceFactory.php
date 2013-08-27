@@ -26,7 +26,7 @@ class CoreResourceFactory extends AResourceFactory {
 
     protected function getAllResourceNames() {
         return array(
-                    "info" => array("resources", "packages","admin", "formatters", "dcat"),
+                    "info" => array("datasets", "packages","admin", "formatters", "dcat"),
                     "definitions" => array("resources","docreset", "discovery")
                 );
     }
