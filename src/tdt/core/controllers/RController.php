@@ -19,6 +19,7 @@ use Monolog\Logger;
 use tdt\core\model\filters\FilterFactory;
 use tdt\core\model\ResourcesModel;
 use tdt\exceptions\TDTException;
+use tdt\core\model\packages\core\Discovery;
 
 class RController extends AController {
 
@@ -35,16 +36,26 @@ class RController extends AController {
         $packageresourcestring = strtolower($packageresourcestring);
         $pieces = explode("/", $packageresourcestring);
         $package = array_shift($pieces);
-
         $model = ResourcesModel::getInstance(Config::getConfigArray());
+
+        if($packageresourcestring == "discovery"){
+            $discovery = new Discovery();
+
+            $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+            $formatter->execute($package, $discovery->create());
+
+            exit();
+        }
+
         $doc = $model->getAllDoc();
         $result = $model->processPackageResourceString($packageresourcestring);
 
         $resourcename = $result["resourcename"];
 
         $package = $result["packagename"];
+
         $RESTparameters = $result["RESTparameters"];
-        
+
         /**
          * Package can also be a part of an entire packagestring if this is the case then a list of links to the other subpackages will have to be listed
          */
