@@ -123,8 +123,7 @@ class Doc {
         if (is_null($doc)) {
 
             $doc = new \stdClass();
-            $doc->protocol = "rest";
-            $doc->servicePath = "/";
+            $doc->protocol = "rest";            
             $doc->rootUrl = $this->hostname . $this->subdir . "";
             $doc->resources = new \stdClass();
 
