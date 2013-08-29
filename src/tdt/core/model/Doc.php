@@ -152,8 +152,8 @@ class Doc {
             // Fill in the get method of the definition resource.
             $doc->resources->definitions->methods->get = new \stdClass();
             $doc->resources->definitions->methods->get->httpMethod = "GET";
-            $doc->resources->definitions->methods->get->path = "/definitions/{identifier}";
-            $doc->resources->definitions->methods->get->description = "Retrieve a resource definition identified by the {identifier}, if no {identifier} is given the entire list of definitions is returned.";            
+            $doc->resources->definitions->methods->get->path = "/definitions";
+            $doc->resources->definitions->methods->get->description = "Retrieve a list of the resource definitions.";            
 
             // The info section of the discovery document.
             $doc->resources->info = new \stdClass();
