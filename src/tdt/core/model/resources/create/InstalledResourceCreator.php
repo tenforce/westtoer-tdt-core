@@ -34,7 +34,7 @@ class InstalledResourceCreator extends ACreator {
         $parameters = parent::documentParameters();
 
         $parameters["location"] = array(
-            "description" => "The location, relative to the model/packages/installed folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.class.php.",
+            "description" => "The location, relative to the model/packages/installed folder, of your class file that represents an installed resource i.e. mypackage/myinstalledresource.php.",
             "required" => true,
         );
 
