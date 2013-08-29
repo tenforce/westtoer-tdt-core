@@ -44,12 +44,12 @@ class CUDController extends AController {
 
         $matches["packageresourcestring"] = ltrim($packageresourcestring, "/");
         $matches["format"] = $format;
+        
         $RController = new RController();
         $RController->GET($matches);
     }
 
     public function HEAD($matches) {
-
 
         $packageresourcestring = $matches[0];
 

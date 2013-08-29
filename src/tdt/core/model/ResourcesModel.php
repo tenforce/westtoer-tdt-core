@@ -69,7 +69,10 @@ class ResourcesModel {
                 foreach ($validator->getErrors() as $error) {
                     $error_string .= "Validation for the json schema didn't validate: [".$error['property'] . "] => " . $error['message'] . "\n";
                 }    
-                $this->throwException(500, array("The given configuration file for the resource model does not validate. Violations are \n $error_string"));;        
+                $exception_config = array();
+                $exception_config["log_dir"] = Config::get("general", "logging", "path");
+                $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
+                throw new TDTException(500, array("The given configuration file for the resource model does not validate. Violations are \n $error_string"), $exception_config);                
             }
 
             Config::setConfig($config);

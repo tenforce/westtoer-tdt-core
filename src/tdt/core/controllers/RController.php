@@ -20,6 +20,7 @@ use tdt\core\model\filters\FilterFactory;
 use tdt\core\model\ResourcesModel;
 use tdt\exceptions\TDTException;
 use tdt\core\model\packages\core\Discovery;
+use tdt\core\model\packages\core\definitions\Resources;
 
 class RController extends AController {
 
@@ -43,6 +44,13 @@ class RController extends AController {
 
             $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
             $formatter->execute($package, $discovery->create());
+
+            exit();
+        }elseif($packageresourcestring == "definitions"){
+            $definitions = new Resources();
+
+            $formatter = new \tdt\formatters\Formatter(strtoupper($matches["format"]));
+            $formatter->execute($package, $definitions->read());
 
             exit();
         }
