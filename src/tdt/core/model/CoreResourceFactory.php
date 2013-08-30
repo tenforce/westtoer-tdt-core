@@ -26,8 +26,7 @@ class CoreResourceFactory extends AResourceFactory {
 
     protected function getAllResourceNames() {
         return array(
-                    "info" => array("datasets", "packages","admin", "formatters", "dcat"),
-                    //"definitions" => array("resources"),
+                    "info" => array("datasets", "packages", "formatters", "dcat"),                    
                 );
     }
 
@@ -61,7 +60,8 @@ class CoreResourceFactory extends AResourceFactory {
             }
 
             $doc->definitions = new \stdClass();
-            $doc->definitions->uri = Config::get("general", "hostname") . Config::get("general", "subdir") . "definitions";
+            $doc->definitions->uri = Config::get("general", "hostname") . Config::get("general", "subdir") . "definitions";µ
+
             $doc->definitions->documentation = "Resource that contains all the resource definitions. Check out the discovery document for a list of methods.";
 
         }
