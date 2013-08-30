@@ -30,7 +30,7 @@ class GenericResourceCreator extends ACreator {
             $exception_config = array();
             $exception_config["log_dir"] = Config::get("general", "logging", "path");
             $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
-            throw new TDTException(452, array("Generic type does not exist: " . $this->generic_type . "."), $exception_config);
+            throw new TDTException(452, array("Source type does not exist: " . $this->generic_type . "."), $exception_config);
         }
 
         $classname = "tdt\\core\\strategies\\" . $this->generic_type;

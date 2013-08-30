@@ -35,7 +35,7 @@ class GenericResource {
      */
     public function getStrategy() {
         if (is_null($this->strategy)) {
-            $classname = "tdt\\core\\strategies\\" . trim($this->strategyname);
+            $classname = "tdt\\core\\strategies\\" . strtoupper(trim($this->strategyname));
             $this->strategy = new $classname();
         }
         return $this->strategy;

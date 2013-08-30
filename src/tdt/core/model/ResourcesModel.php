@@ -188,16 +188,17 @@ class ResourcesModel {
         }
 
         $factory_name = $source_type;
-
+       
         // Small tweak for the factory selection, remote and installed is not problem
         // However strategies that share common logic (aka generic resources such as csv, shp, db, xls, ...) are being handled by the generic factory
-        if($factory_name != "remote" || $factory_name != "installed"){
+        if(strtolower($factory_name) != "remote" && strtolower($factory_name) != "installed"){
             $factory_name = "generic";
             $parameters["generic_type"] = $source_type;
         }
         
         // All the necessities have been validates, let's create a resource definition!
         $creator = $this->factories[$factory_name]->createCreator($package, $resource, $parameters);
+
         try {
             // First check if the identifier for the resource definitino already exists.
             if ($this->hasResource($package, $resource)) {

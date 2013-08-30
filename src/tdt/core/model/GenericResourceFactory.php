@@ -255,10 +255,12 @@ class GenericResourceFactory extends AResourceFactory {
                 if ($strat != "." && $strat != ".." && $strat != "README.md" && !is_dir(__DIR__ . "/../strategies/" . $strat) && file_exists(__DIR__ . "/../strategies/" . $strat)) {
                     $fileexplode = explode(".", $strat);
                     $classname = "tdt\\core\\strategies\\" . $fileexplode[0];
-                    $class = new \ReflectionClass($classname);
-                    if (!$class->isAbstract()) {
-                        $strategies[] = $fileexplode[0];
-                    }
+                    if(class_exists($classname)){
+                        $class = new \ReflectionClass($classname);
+                        if (!$class->isAbstract()) {
+                            $strategies[] = $fileexplode[0];
+                        }
+                    }                    
                 }
             }
             closedir($handle);
