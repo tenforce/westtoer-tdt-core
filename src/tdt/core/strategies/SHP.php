@@ -95,7 +95,10 @@ class SHP extends ATabularData {
             $record = $shp->getNext();
             // read meta data
             if($record == false){
-                exit();
+                $exception_config = array();
+                $exception_config["log_dir"] = Config::get("general", "logging", "path");
+                $exception_config["url"] = Config::get("general", "hostname") . Config::get("general", "subdir") . "error";
+                throw new TDTException(452, array("Cannot read the shape file from the given uri $this->uri."), $exception_config);
             }
 
             $dbf_fields = $record->getDbfFields();
