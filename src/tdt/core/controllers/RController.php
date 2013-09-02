@@ -37,7 +37,7 @@ class RController extends AController {
         $packageresourcestring = strtolower($packageresourcestring);
         $pieces = explode("/", $packageresourcestring);
         $package = array_shift($pieces);
-        $model = ResourcesModel::getInstance(Config::getConfigArray());
+        $model = ResourcesModel::getInstance(Config::getConfigArray());        
 
         if($packageresourcestring == "discovery"){
             $discovery = new Discovery();
@@ -118,6 +118,7 @@ class RController extends AController {
         //This will create an instance of a factory depending on which format is set
 
         $parameters = $_GET;
+
         $requiredParameters = array();
 
         foreach ($doc->$package->$resourcename->requiredparameters as $parameter) {
