@@ -15,6 +15,20 @@
             "app/tests/TestCase.php"
         ]
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "westtoer/tdt-input",
+                "version": "dev-blackwell",
+                "source": {
+                    "url": "https://github.com/westtoer/tdt-input.git",
+                    "type": "git",
+                    "reference": "blackwell"
+                }
+            }
+        }
+    ],
     "require": {
         "laravel/framework": "4.0.*",
         "phpoffice/phpexcel": "1.7.9",
@@ -22,7 +36,8 @@
         "semsol/arc2": "dev-master#5e0701da09d74ef3813e15bc67e4e27b212e816c",
         "easyrdf/easyrdf" : "dev-master#313a26ebcd22abfe1f3eed26b5120e6d219890c4",
         "kriswallsmith/buzz": "dev-master#805272acb603161f0bc92380bbd801d5ffabf89d",
-        "cartalyst/sentry": "2.0.*"
+        "cartalyst/sentry": "2.0.*",
+        "tdt/input":"dev-blackwell"
     },
     "scripts": {
         "post-install-cmd": [
@@ -38,7 +53,6 @@
         "post-update-cmd": [
             "php artisan optimize",
             "php artisan migrate",
-            "php artisan migrate --package=tdt/input",
             "php artisan migrate --package=cartalyst/sentry"
         ],
         "post-create-project-cmd": [

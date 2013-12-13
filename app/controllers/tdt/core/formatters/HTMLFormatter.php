@@ -45,6 +45,26 @@ class HTMLFormatter implements IFormatter{
                     $data = $dataset_link . '.map';
                     break;
 
+                case 'LD':
+
+                    // This data object is always semantic
+                    $view = 'dataset.code';
+
+                    // Check if a configuration is given
+                    $conf = array();
+                    if(!empty($dataObj->semantic->conf)){
+                        $conf = $dataObj->semantic->conf;
+                    }
+
+                    // Serializer instantiation
+                    $ser = \ARC2::getTurtleSerializer($conf);
+
+                    // Serialize a triples array
+                    $data = $ser->getSerializedTriples($dataObj->data->getTriples());
+
+
+                    break;
+
                 case 'SPARQL':
 
                     if($dataObj->is_semantic){
