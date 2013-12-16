@@ -1,6 +1,7 @@
 <?php
 
 namespace tdt\core;
+use tdt\core\auth\Auth;
 
 /**
  * HomeController
@@ -11,6 +12,9 @@ namespace tdt\core;
 class HomeController extends \Controller {
 
     public static function handle($uri){
+
+        Auth::requirePermissions('dataset.view');
+
         $definitions = \Definition::all();
 
         $view = \View::make('home')->with('title', 'The Datatank')

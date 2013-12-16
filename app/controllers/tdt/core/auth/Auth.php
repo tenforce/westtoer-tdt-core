@@ -22,28 +22,6 @@ class Auth extends \Controller {
             $permissions = array($permissions);
         }
 
-        // First check the permissions of the group 'everyone
-        try{
-
-            // Get the group
-            $group = \Sentry::findGroupByName('everyone');
-
-            // Get the group permissions
-            $groupPermissions = $group->getPermissions();
-
-            foreach($permissions as $permission){
-                if(!empty($groupPermissions[$permission]) && $groupPermissions[$permission] == 1){
-                    // Everyone has access
-                    return true;
-                }else{
-                    break;
-                }
-            }
-
-        }catch(\Cartalyst\Sentry\Groups\GroupNotFoundException $e){
-            // Do nothing, proceed other checks
-        }
-
         // Authenticate
         self::logIn();
 
