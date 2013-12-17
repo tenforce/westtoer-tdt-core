@@ -121,7 +121,9 @@ class DatasetController extends \Controller {
             $discovery = $this->getDiscoveryDocument();
 
             // Get spec for media type
-            // var_dump($source_definition->getType());
+            //var_dump($source_definition->getType());
+	//	var_dump($discovery);
+		
             if(empty($discovery->resources->definitions->methods->patch->mediaType->{strtolower($source_definition->getType())} )){
                 \App::abort('500', 'There is no definition of the media type of this dataset in the discovery document.');
             }
@@ -188,7 +190,6 @@ class DatasetController extends \Controller {
         $cURL = new \Buzz\Client\Curl();
         $cURL->setVerifyPeer(false);
         $cURL->setTimeout(30);
-
         // Get discovery document
         $browser = new \Buzz\Browser($cURL);
         $response = $browser->get(\URL::to('discovery'));
