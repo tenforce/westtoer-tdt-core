@@ -61,8 +61,6 @@ class HTMLFormatter implements IFormatter{
 
                     // Serialize a triples array
                     $data = $ser->getSerializedTriples($dataObj->data->getTriples());
-
-
                     break;
 
                 case 'SPARQL':

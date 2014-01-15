@@ -42,7 +42,7 @@ class LDController extends SPARQLController {
         $triple_uri = \Request::fullUrl();
 
         // Detach the format
-        if(preg_match('/.*(\..+)/', $triple_uri, $matches)){
+        if(preg_match('/.*(\.([a-zA-Z]+)$)/', $triple_uri, $matches)){
             $format = $matches[1];
             $triple_uri = str_replace($format, '', $triple_uri);
         }

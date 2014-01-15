@@ -18,7 +18,7 @@ class DatasetController extends \Controller {
     public static function handle($uri){
 
         // Set permission
-        Auth::requirePermissions('dataset.view');
+        //Auth::requirePermissions('dataset.view');
 
         // Split for an (optional) extension
         preg_match('/([^\.]*)(?:\.(.*))?$/', $uri, $matches);
@@ -44,7 +44,7 @@ class DatasetController extends \Controller {
         $cache_string .= http_build_query(\Input::except('limit', 'offset', 'page', 'page_size'));
         $cache_string = sha1($cache_string);
 
-        if(\Cache::has($cache_string)){
+        if(false && \Cache::has($cache_string)){
             return ContentNegotiator::getResponse(\Cache::get($cache_string), $extension);
         }else{
 
