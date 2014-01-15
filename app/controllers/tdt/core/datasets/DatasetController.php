@@ -76,7 +76,7 @@ class DatasetController extends \Controller {
                     $data->rest_parameters = $rest_parameters;
 
                     // REST filtering
-                    if($source_definition->getType() != 'INSTALLED' && count($data->rest_parameters) > 0){
+                    if($source_definition->getType() != 'LD' && $source_definition->getType() != 'INSTALLED' && count($data->rest_parameters) > 0){
                         $data->data = self::applyRestFilter($data->data, $data->rest_parameters);
                     }
 

@@ -34,7 +34,6 @@ class SPARQLController extends ADataController {
         $matches = array();
         $keyword = "";
 
-
         // If a select statement has been passed, we ask for JSON results
         // If a construct statement has been passed, we ask for RDF/XML
         if(stripos($query,"select") !== FALSE){ // SELECT query

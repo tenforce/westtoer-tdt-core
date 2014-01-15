@@ -39,6 +39,15 @@ class LDController extends SPARQLController {
         // Construct the graph name
         $graph_name = $uri . '/' . $collection . "/" .$resource_name;
 
+        $triple_uri = \Request::fullUrl();
+        var_dump($triple_uri);
+
+        // Detach the format
+        if(preg_match('/.*(\..+)/', $triple_uri, $matches)){
+            $format = $matches[1];
+            $triple_uri = str_replace($format, '', $triple_uri);
+        }
+
         // Retrieve the graph instance, if not found then abort the process
         $graph = \Graph::whereRaw('graph_name like ?', array($graph_name))->first();
 
@@ -47,9 +56,8 @@ class LDController extends SPARQLController {
             \App::abort('404', 'No graph with the name ' . $graph_name . ' could be found.');
         }
 
-        // TODO Pieter Colpaert needs to fix the mapping in his streamingrdfmapper https://github.com/tdt/input/issues/57
         // Construct a query that will tell us how many triples there are in the graph
-        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . }}";//FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )}}";
+        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$triple_uri') OR (?s LIKE '$triple_uri/%') )}}";
 
         // Execute the count query for paging purposes
         $count_query = urlencode($count_query);
@@ -80,8 +88,7 @@ class LDController extends SPARQLController {
         $query = 'CONSTRUCT { ?s ?p ?o } ';
         $query .= "WHERE { GRAPH <$graph->graph_id> { ";
         $query .= '?s ?p ?o .';
-        // TODO Awaiting a fix for input issue: https://github.com/tdt/input/issues/57
-        //$query .= "FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )";
+        $query .= "FILTER ( (?s LIKE '$triple_uri') OR (?s LIKE '$triple_uri/%') )";
         $query .= '}  } ORDER BY asc(?s)';
 
         // Apply paging parameters to the query
