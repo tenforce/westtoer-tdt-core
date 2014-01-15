@@ -40,7 +40,6 @@ class LDController extends SPARQLController {
         $graph_name = $uri . '/' . $collection . "/" .$resource_name;
 
         $triple_uri = \Request::fullUrl();
-        var_dump($triple_uri);
 
         // Detach the format
         if(preg_match('/.*(\..+)/', $triple_uri, $matches)){
