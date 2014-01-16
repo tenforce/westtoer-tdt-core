@@ -9,6 +9,7 @@
 namespace tdt\core\ui;
 
 use tdt\core\auth\Auth;
+use tdt\core\definitions\DiscoveryController;
 
 class DatasetController extends \Controller {
 
@@ -37,7 +38,6 @@ class DatasetController extends \Controller {
 
         // Set permission
         Auth::requirePermissions('admin.dataset.create');
-
         $discovery = $this->getDiscoveryDocument();
 
         // Get spec for media types
@@ -56,14 +56,12 @@ class DatasetController extends \Controller {
             foreach($type->parameters as $parameter => $object){
 
                 // Filter array type parameters
-
                 if(empty($object->parameters)){
-
                     // Filter Dublin core parameters
                     if(!empty($object->group) && $object->group == 'dc'){
                         $parameters_dc[$parameter] = $object;
                     }else{
-                        // Fitler optional vs required
+                        // Filter optional vs required
                         if($object->required){
                             $parameters_required[$parameter] = $object;
                         }else{
@@ -123,7 +121,7 @@ class DatasetController extends \Controller {
             // Get spec for media type
             //var_dump($source_definition->getType());
 	//	var_dump($discovery);
-		
+
             if(empty($discovery->resources->definitions->methods->patch->mediaType->{strtolower($source_definition->getType())} )){
                 \App::abort('500', 'There is no definition of the media type of this dataset in the discovery document.');
             }
@@ -186,6 +184,7 @@ class DatasetController extends \Controller {
     }
 
     private function getDiscoveryDocument(){
+        /*
         // Create a CURL client
         $cURL = new \Buzz\Client\Curl();
         $cURL->setVerifyPeer(false);
@@ -195,8 +194,10 @@ class DatasetController extends \Controller {
         $response = $browser->get(\URL::to('discovery'));
 
         // Document content
-        $discovery = json_decode($response->getContent());
+        $discovery = json_decode($response->getContent());*/
 
+        $discovery = json_decode(json_encode(DiscoveryController::createDiscoveryDocument()));
+        //var_dump($discovery);
         return $discovery;
     }
 

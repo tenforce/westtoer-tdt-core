@@ -45,7 +45,7 @@ class DiscoveryController extends \Controller {
     /**
      * Create the discovery document
      */
-    private static function createDiscoveryDocument(){
+    public static function createDiscoveryDocument(){
 
         // Create and return a dument that holds a self-explanatory document
         // about how to interface with the datatank
