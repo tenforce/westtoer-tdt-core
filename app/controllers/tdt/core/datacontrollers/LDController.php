@@ -13,7 +13,6 @@ use tdt\core\datasets\Data;
 */
 class LDController extends SPARQLController {
 
-
     /**
      * We create a publication of the linked data within a graph that matches the name of the request uri.
      * The graph that will be published is the one that is stored in the graph model after the loading of triples
@@ -33,19 +32,11 @@ class LDController extends SPARQLController {
         // Get the definition of this ld defintion to retrieve the collection and resource name
         $definition = $source_definition->definition()->first();
 
-        $collection = $definition->collection_uri;
-        $resource_name = $definition->resource_name;
+        $collection = $definition->original_collection_uri;
+        $resource_name = $definition->original_resource_name;
 
         // Construct the graph name
         $graph_name = $uri . '/' . $collection . "/" .$resource_name;
-
-        $triple_uri = \Request::root() . '/' . \Request::path();
-
-        // Detach the format
-        if(preg_match('/.*(\.([a-zA-Z]+)$)/', $triple_uri, $matches)){
-            $format = $matches[1];
-            $triple_uri = str_replace($format, '', $triple_uri);
-        }
 
         // Retrieve the graph instance, if not found then abort the process
         $graph = \Graph::whereRaw('graph_name like ?', array($graph_name))->first();
@@ -56,7 +47,7 @@ class LDController extends SPARQLController {
         }
 
         // Construct a query that will tell us how many triples there are in the graph
-        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$triple_uri') OR (?s LIKE '$triple_uri/%') )}}";
+        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )}}";
 
         // Execute the count query for paging purposes
         $count_query = urlencode($count_query);
@@ -87,7 +78,7 @@ class LDController extends SPARQLController {
         $query = 'CONSTRUCT { ?s ?p ?o } ';
         $query .= "WHERE { GRAPH <$graph->graph_id> { ";
         $query .= '?s ?p ?o .';
-        $query .= "FILTER ( (?s LIKE '$triple_uri') OR (?s LIKE '$triple_uri/%') )";
+        $query .= "FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )";
         $query .= '}  } ORDER BY asc(?s)';
 
         // Apply paging parameters to the query

@@ -15,8 +15,8 @@ class BaseController extends \Controller {
      */
     public function handleRequest($uri){
 
-        // Introduce case insensitivity and trim right '/'
-        $uri = strtolower(rtrim($uri, '/'));
+        // Trim right '/'
+        $uri = rtrim($uri, '/');
 
         // Check first segment of the request
         switch(\Request::segment(1)){
@@ -35,10 +35,12 @@ class BaseController extends \Controller {
                         break;
                     case 'info':
                         // Info request
+                        $uri = strtolower($uri);
                         $controller = 'tdt\core\definitions\InfoController';
                         $uri = str_replace('api/info', '', $uri);
                         break;
                     case 'dcat':
+                        $uri = strtolower($uri);
                         // Dcat request
                         $controller = 'tdt\core\definitions\DcatController';
                         $uri = str_replace('api/dcat', '', $uri);

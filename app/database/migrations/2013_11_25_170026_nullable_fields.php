@@ -19,8 +19,6 @@ class NullableFields extends Migration {
 		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN endpoint VARCHAR(255) NULL');
 
 		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN description VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN description VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN description VARCHAR(255) NULL');
 	}
 
 	/**

@@ -21,6 +21,9 @@ class DefinitionController extends \Controller {
     public static function handle($uri){
 
         $uri = ltrim($uri, '/');
+        $original_uri = $uri;
+
+        $uri = strtolower($uri);
 
         // Propagate the request based on the HTTPMethod of the request
         $method = \Request::getMethod();
@@ -31,7 +34,7 @@ class DefinitionController extends \Controller {
                 // Set permission
                 Auth::requirePermissions('definition.create');
 
-                return self::createDefinition($uri);
+                return self::createDefinition($original_uri);
                 break;
             case "GET":
                 // Set permission
@@ -69,6 +72,9 @@ class DefinitionController extends \Controller {
      * Create a new definition based on the PUT parameters given and content-type.
      */
     private static function createDefinition($uri){
+
+        $original_uri = $uri;
+        $uri = strtolower($uri);
 
         // Check if the uri already exists
         if(self::exists($uri)){
@@ -138,12 +144,19 @@ class DefinitionController extends \Controller {
 
             $def_instance->save($params);
 
+            // Fetch the original (case sensitive URI parts)
+            $parts = explode('/', $original_uri);
+            $original_resource_name = array_pop($parts);
+            $original_collection_uri = implode('/', $parts);
+
             // Create the definition associated with the new definition instance
             $definition = new \Definition();
             $definition->collection_uri = $collection_uri;
             $definition->resource_name = $resource_name;
             $definition->source_id = $def_instance->id;
             $definition->source_type = ucfirst($type) . 'Definition';
+            $definition->original_collection_uri = $original_collection_uri;
+            $definition->original_resource_name = $original_resource_name;
 
             // Add the create parameters of description to the new description object
             $def_params = array_only($params, array_keys(\Definition::getCreateParameters()));
