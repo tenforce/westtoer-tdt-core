@@ -38,7 +38,12 @@ class LDController extends SPARQLController {
         // Construct the graph name
         $graph_name = $uri . '/' . $collection . "/" .$resource_name;
 
-        // Retrieve the graph instance, if not found then abort the process
+        // Add the REST parameters to the subject uri
+        $subject_uri = $graph_name . '/' . implode('/', $rest_parameters);
+
+        $subject_uri = rtrim($subject_uri, '/');
+
+        // Retrieve the graph instance, if not found then abo`the process
         $graph = \Graph::whereRaw('graph_name like ?', array($graph_name))->first();
 
         // If no graph exists, abort the process
@@ -47,7 +52,7 @@ class LDController extends SPARQLController {
         }
 
         // Construct a query that will tell us how many triples there are in the graph
-        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )}}";
+        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$subject_uri') OR (?s LIKE '$subject_uri/%') )}}";
 
         // Execute the count query for paging purposes
         $count_query = urlencode($count_query);
@@ -78,7 +83,7 @@ class LDController extends SPARQLController {
         $query = 'CONSTRUCT { ?s ?p ?o } ';
         $query .= "WHERE { GRAPH <$graph->graph_id> { ";
         $query .= '?s ?p ?o .';
-        $query .= "FILTER ( (?s LIKE '$uri') OR (?s LIKE '$uri/%') )";
+        $query .= "FILTER ( (?s LIKE '$subject_uri') OR (?s LIKE '$subject_uri/%') )";
         $query .= '}  } ORDER BY asc(?s)';
 
         // Apply paging parameters to the query
