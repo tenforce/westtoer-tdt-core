@@ -3,9 +3,11 @@
 namespace tdt\core\datacontrollers;
 
 use tdt\core\datasets\Data;
+use tdt\core\Pager;
 
 /**
  * CSV Controller
+ *
  * @copyright (C) 2011,2013 by OKFN Belgium vzw/asbl
  * @license AGPLv3
  * @author Jan Vansteenlandt <jan@okfn.be>
@@ -17,10 +19,9 @@ class CSVController extends ADataController {
     // Amount of characters in one row that can be read
     private static $MAX_LINE_LENGTH = 0;
 
-
     public function readData($source_definition, $rest_parameters = array()){
 
-        list($limit, $offset) = self::calculateLimitAndOffset();
+        list($limit, $offset) = Pager::calculateLimitAndOffset();
 
         // Check the given URI
         if (!empty($source_definition->uri)) {
@@ -57,6 +58,7 @@ class CSVController extends ADataController {
         $pk = null;
 
         foreach($columns as $column){
+
             $aliases[$column->column_name] = $column->column_name_alias;
 
             if(!empty($column->is_pk)){
@@ -79,7 +81,7 @@ class CSVController extends ADataController {
         $hits = 0;
         if (($handle = fopen($uri, "r")) !== FALSE) {
 
-            while (($data = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
+            while (($data = fgetcsv($handle, 2000000, $delimiter)) !== FALSE) {
 
                 if($total_rows >= $start_row){
 
@@ -117,7 +119,7 @@ class CSVController extends ADataController {
             \App::abort(500, "Cannot retrieve any data from the CSV file on location $uri.");
         }
 
-        $paging = $this->calculatePagingHeaders($limit, $offset, $total_rows);
+        $paging = Pager::calculatePagingHeaders($limit, $offset, $total_rows);
 
         $data_result = new Data();
         $data_result->data = $row_objects;
