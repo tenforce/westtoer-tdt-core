@@ -53,7 +53,7 @@ class LDController extends SPARQLController {
 
         // Construct a query that will tell us how many triples there are in the graph
         $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( (?s LIKE '$subject_uri') OR (?s LIKE '$subject_uri/%') )}}";
-        //dd($count_query);
+
         // Execute the count query for paging purposes
         $count_query = urlencode($count_query);
         $count_query = str_replace("+", "%20", $count_query);
