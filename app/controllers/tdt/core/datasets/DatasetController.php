@@ -63,7 +63,7 @@ class DatasetController extends \Controller {
                     $data_controller = new $controller_class();
 
                     // Get REST parameters
-                    $rest_parameters = str_replace($definition->collection_uri . '/' . $definition->resource_name, '', $uri);
+                    $rest_parameters = str_ireplace($definition->collection_uri . '/' . $definition->resource_name, '', $uri);
                     $rest_parameters = ltrim($rest_parameters, '/');
                     $rest_parameters = explode('/', $rest_parameters);
 
