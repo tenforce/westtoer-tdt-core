@@ -29,7 +29,7 @@
         "easyrdf/easyrdf" : "dev-master#313a26ebcd22abfe1f3eed26b5120e6d219890c4",
         "kriswallsmith/buzz": "dev-master#805272acb603161f0bc92380bbd801d5ffabf89d",
         "cartalyst/sentry": "2.0.*",
-        "tdt/input":"dev-blackwell",
+        "tdt/input" : "dev-blackwell",
         "tdt/json" : "dev-master"
     },
     "scripts": {
@@ -52,5 +52,5 @@
             "php artisan key:generate"
         ]
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "alpha"
 }
