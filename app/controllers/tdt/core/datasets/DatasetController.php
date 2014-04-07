@@ -21,10 +21,7 @@ class DatasetController extends \Controller {
         //Auth::requirePermissions('dataset.view');
 
         // Split for an (optional) extension
-        preg_match('/([^\.]*)(?:\.(.*))?$/', $uri, $matches);
-
-        // URI is always the first match
-        $uri = $matches[1];
+        list($uri, $extension) = self::processURI($uri);
 
         // Don't allow non-Get requests
         $method = \Request::getMethod();
@@ -33,13 +30,12 @@ class DatasetController extends \Controller {
             \App::abort(405, "The HTTP method '$method' is not supported by this resource.");
         }
 
-        // Get extension (if set)
-        $extension = (!empty($matches[2]))? $matches[2]: null;
-
         // Check for caching
         // Based on: URI / Rest parameters / Query parameters / Paging headers
         $cache_string = $uri;
+
         list($limit, $offset) = ADataController::calculateLimitAndOffset();
+
         $cache_string .= '/limit=' . $limit . 'offset=' . $offset;
         $cache_string .= http_build_query(\Input::except('limit', 'offset', 'page', 'page_size'));
         $cache_string = sha1($cache_string);
@@ -166,6 +162,40 @@ class DatasetController extends \Controller {
         }
 
         return array($data);
+    }
+
+    /**
+     * Process the URI and return the extension (=format) and the resource identifier URI
+     *
+     * @param string $uri The URI that has been passed
+     * @return array
+     */
+    private static function processURI($uri)
+    {
+        $dot_position = strrpos($uri, '.');
+
+        if (!$dot_position) {
+            return array($uri, null);
+        }
+
+        // If a dot has been found, do a couple
+        // of checks to find out if it introduces a formatter
+        $uri_parts = explode('.', $uri);
+
+        $possible_extension = array_pop($uri_parts);
+
+        $uri = implode('.', $uri_parts);
+
+        $formatter_class = 'Tdt\\Core\\Formatters\\' . $possible_extension . 'Formatter';
+
+        if (!class_exists($formatter_class)) {
+
+            $uri .= $possible_extension;
+
+            return array($uri, null);
+        }
+
+        return array($uri, $possible_extension);
     }
 
     /**
