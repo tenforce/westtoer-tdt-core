@@ -22,7 +22,7 @@ class DatasetController extends \Controller {
 
         // Split for an (optional) extension
         list($uri, $extension) = self::processURI($uri);
-
+        
         // Don't allow non-Get requests
         $method = \Request::getMethod();
         if($method != 'GET'){
@@ -186,7 +186,7 @@ class DatasetController extends \Controller {
 
         $uri = implode('.', $uri_parts);
 
-        $formatter_class = 'Tdt\\Core\\Formatters\\' . $possible_extension . 'Formatter';
+        $formatter_class = 'tdt\\core\\formatters\\' . $possible_extension . 'Formatter';
 
         if (!class_exists($formatter_class)) {
 
