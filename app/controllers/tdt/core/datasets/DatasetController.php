@@ -170,7 +170,7 @@ class DatasetController extends \Controller {
      * @param string $uri The URI that has been passed
      * @return array
      */
-    private static function processURI($uri)
+    private function processURI($uri)
     {
         $dot_position = strrpos($uri, '.');
 
@@ -182,7 +182,7 @@ class DatasetController extends \Controller {
         // of checks to find out if it introduces a formatter
         $uri_parts = explode('.', $uri);
 
-        $possible_extension = array_pop($uri_parts);
+        $possible_extension = strtoupper(array_pop($uri_parts));
 
         $uri = implode('.', $uri_parts);
 
@@ -190,14 +190,14 @@ class DatasetController extends \Controller {
 
         if (!class_exists($formatter_class)) {
 
-            $uri .= $possible_extension;
+            // Re-attach the dot with the latter part of the uri
+            $uri .= '.' . $possible_extension;
 
             return array($uri, null);
         }
 
         return array($uri, $possible_extension);
     }
-
     /**
      * Case insensitive search for a property of an object
      */
