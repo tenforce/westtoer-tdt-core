@@ -170,7 +170,7 @@ class DatasetController extends \Controller {
      * @param string $uri The URI that has been passed
      * @return array
      */
-    private function processURI($uri)
+    private static function processURI($uri)
     {
         $dot_position = strrpos($uri, '.');
 
