@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class GeoPropertiesInit extends Migration {
+class GeoPropertiesInit extends Migration
+{
 
     /**
      * Run the migrations.
@@ -18,7 +19,7 @@ class GeoPropertiesInit extends Migration {
             $table->string('source_type', 255);
             $table->integer('source_id');
             $table->string('path', 255);
-            $table->string('geo_property', 255);
+            $table->string('property', 255);
 
             // created_at | updated_at DATETIME, are default expected by the Eloquent ORM.
             $table->timestamps();

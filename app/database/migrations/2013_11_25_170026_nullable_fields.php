@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class NullableFields extends Migration {
+class NullableFields extends Migration
+{
 
 	/**
 	 * Run the migrations.
@@ -11,14 +12,6 @@ class NullableFields extends Migration {
 	 */
 	public function up()
 	{
-		//  Alter varchar length to 255 instead of 256
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN endpoint_user VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN endpoint_password VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN query VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN description VARCHAR(255) NULL');
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN endpoint VARCHAR(255) NULL');
-
-		\DB::statement('ALTER TABLE sparqldefinitions MODIFY COLUMN description VARCHAR(255) NULL');
 	}
 
 	/**
@@ -28,8 +21,5 @@ class NullableFields extends Migration {
 	 */
 	public function down()
 	{
-		// No rollback necessary
-
 	}
-
 }

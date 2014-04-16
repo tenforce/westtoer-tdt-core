@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class JsonDefinitionInit extends Migration {
+class JsonDefinitionInit extends Migration
+{
 
     /**
      * Run the migrations.
@@ -16,6 +17,7 @@ class JsonDefinitionInit extends Migration {
 
             $table->increments('id');
             $table->string('uri', 255);
+            $table->string('description', 1024);
 
             // created_at | updated_at DATETIME, are default expected by the Eloquent ORM.
             $table->timestamps();
@@ -32,5 +34,4 @@ class JsonDefinitionInit extends Migration {
         // Drop the table for the JSONDefinition model.
         Schema::drop('jsondefinitions');
     }
-
 }

@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class XmlDefinitionInit extends Migration {
+class XmlDefinitionInit extends Migration
+{
 
 	/**
 	 * Run the migrations.
@@ -16,6 +17,7 @@ class XmlDefinitionInit extends Migration {
 
             $table->increments('id');
             $table->string('uri', 255);
+            $table->string('description', 1024);
 
             // created_at | updated_at DATETIME, are default expected by the Eloquent ORM.
             $table->timestamps();
@@ -33,5 +35,4 @@ class XmlDefinitionInit extends Migration {
 		// Drop the xml definition table
 		Schema::drop('xmldefinitions');
 	}
-
 }

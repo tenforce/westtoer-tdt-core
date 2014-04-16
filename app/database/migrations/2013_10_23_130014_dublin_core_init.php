@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class DublinCoreInit extends Migration {
+class DublinCoreInit extends Migration
+{
 
 	/**
 	 * Run the migrations.
@@ -14,21 +15,21 @@ class DublinCoreInit extends Migration {
 		// Add the dublin core to the definitions.
 		Schema::table('definitions', function($table)
 		{
-			$table->string('title');
-			$table->string('creator');
-			$table->string('subject');
-			$table->string('description');
-			$table->string('publisher');
-			$table->string('contributor');
-			$table->string('date');
-			$table->string('type');
-			$table->string('format');
-			$table->string('identifier');
-			$table->string('source');
-			$table->string('language');
-			$table->string('relation');
-			$table->string('coverage');
-			$table->string('rights');
+			$table->string('title')->nullable();
+			$table->string('creator')->nullable();
+			$table->string('subject')->nullable();
+			$table->string('description')->nullable();
+			$table->string('publisher')->nullable();
+			$table->string('contributor')->nullable();
+			$table->string('date')->nullable();
+			$table->string('type')->nullable();
+			$table->string('format')->nullable();
+			$table->string('identifier')->nullable();
+			$table->string('source')->nullable();
+			$table->string('language')->nullable();
+			$table->string('relation')->nullable();
+			$table->string('coverage')->nullable();
+			$table->string('rights')->nullable();
 
 		});
 	}
@@ -43,7 +44,7 @@ class DublinCoreInit extends Migration {
 		// Remove the dublin core from the definitions.
 		Schema::table('definitions', function($table)
 		{
-			/*$table->dropColumn('title');
+			$table->dropColumn('title');
 			$table->dropColumn('creator');
 			$table->dropColumn('subject');
 			$table->dropColumn('description');
@@ -57,10 +58,9 @@ class DublinCoreInit extends Migration {
 			$table->dropColumn('language');
 			$table->dropColumn('relation');
 			$table->dropColumn('coverage');
-			$table->dropColumn('rights');*/
+			$table->dropColumn('rights');
 		});
 
 
 	}
-
 }

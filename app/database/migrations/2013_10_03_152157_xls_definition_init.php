@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class XlsDefinitionInit extends Migration {
+class XlsDefinitionInit extends Migration
+{
 
 	/**
 	 * Run the migrations.
@@ -19,6 +20,7 @@ class XlsDefinitionInit extends Migration {
             $table->string('sheet', 255);
             $table->boolean('has_header_row');
             $table->integer('start_row');
+            $table->string('description', 1024);
 
             // created_at | updated_at DATETIME, are default expected by the Eloquent ORM.
             $table->timestamps();
@@ -35,5 +37,4 @@ class XlsDefinitionInit extends Migration {
 		// Drop the XLS definition table.
 		Schema::drop('xlsdefinitions');
 	}
-
 }

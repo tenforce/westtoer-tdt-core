@@ -10,3 +10,6 @@
 | the console gets access to each of the command object instances.
 |
 */
+
+Artisan::add(new Tdt\Core\Commands\Export);
+Artisan::add(new Tdt\Core\Commands\Import);

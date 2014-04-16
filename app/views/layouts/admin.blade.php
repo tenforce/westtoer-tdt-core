@@ -8,32 +8,32 @@
         <meta name="DC.title" content="{{ $title }}"/>
 
         <link href='//fonts.googleapis.com/css?family=Varela+Round|Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
-        <link rel='stylesheet' href='{{ URL::to("css/main.css") }}' type='text/css'/>
+        <link rel='stylesheet' href='{{ URL::to("css/main.css") }}?v={{ Config::get('app.version', 4) }}' type='text/css'/>
     </head>
 
     <body>
         <nav class="navbar navbar-fixed-top">
-            <a class="navbar-brand" href="{{ URL::to('api/admin') }} ">
+            <a class="navbar-brand admin" href="{{ URL::to('api/admin') }} ">
                 <img src='{{ URL::to("img/logo.png") }}' alt='Datatank logo' />
                 <h1>Admin</h1>
             </a>
 
-            <ul class="nav navbar-nav navbar-right">
-                @if(tdt\core\auth\Auth::hasAccess('admin.dataset.view'))
+            <ul class="nav navbar-nav">
+                @if(Tdt\Core\Auth\Auth::hasAccess('admin.dataset.view'))
                     <li @if(Request::segment(3) == '' || Request::segment(3) == 'datasets')  class='active' @endif>
                         <a href="{{ URL::to('api/admin/datasets') }}">
                             <i class='fa fa-table'></i> Datasets
                         </a>
                     </li>
                 @endif
-                @if(tdt\core\auth\Auth::hasAccess('admin.user.view'))
+                @if(Tdt\Core\Auth\Auth::hasAccess('admin.user.view'))
                     <li @if(Request::segment(3) == 'users')  class='active' @endif>
                         <a href="{{ URL::to('api/admin/users') }}">
                             <i class='fa fa-user'></i> Users
                         </a>
                     </li>
                 @endif
-                @if(tdt\core\auth\Auth::hasAccess('admin.group.view'))
+                @if(Tdt\Core\Auth\Auth::hasAccess('admin.group.view'))
                     <li @if(Request::segment(3) == 'groups')  class='active' @endif>
                         <a href="{{ URL::to('api/admin/groups') }}">
                             <i class='fa fa-group'></i> Groups
@@ -41,6 +41,8 @@
                     </li>
                 @endif
             </ul>
+
+            @yield('navigation')
         </nav>
 
         <div class="wrapper">
@@ -53,7 +55,7 @@
 
         <footer>
             <div class="col-lg-12">
-                The DataTank &middot; <a href="//thedatatank.com/" target="_blank">Visit our website</a>
+                Powered by <a href="//thedatatank.com/" target="_blank">The DataTank</a>
             </div>
         </footer>
         <script type='text/javascript'>

@@ -2,29 +2,17 @@
 
 @section('content')
 
-    <div class='row'>
+    <div class='row header'>
         <div class="col-sm-7">
             <h3>Manage your data</h3>
         </div>
         <div class="col-sm-5 text-right">
-            <a href='{{ URL::to('api/admin/datasets/add') }}' class='btn btn-primary pull-right margin-left'
-                    data-step='1'
-                    data-intro='Add a new dataset to the system.'
-                    data-position="left">
+            <a href='{{ URL::to('api/admin/datasets/add') }}' class='btn btn-primary margin-left'
+                data-step='1'
+                data-intro='Add a new dataset to the system.'
+                data-position="left">
                 <i class='fa fa-plus'></i> Add
             </a>
-
-            <div class="input-group"
-                data-step='2'
-                data-intro='Start typing here to <strong>search</strong> for a dataset.'
-                data-position="bottom"
-                >
-                <input id='dataset-filter' type="text" class="form-control" placeholder='Search for datasets'>
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" disabled>Filter</button>
-                </span>
-            </div>
-
         </div>
     </div>
 
@@ -35,7 +23,7 @@
         <?php $i = 0; ?>
         @foreach($definitions as $definition)
 
-            <div class="panel dataset dataset-link button-row panel-default  @if(tdt\core\auth\Auth::hasAccess('admin.dataset.update')) clickable-row @endif" data-href='{{ URL::to('api/admin/datasets/edit/' . $definition->id) }}'>
+            <div class="panel dataset dataset-link button-row panel-default  @if(Tdt\Core\Auth\Auth::hasAccess('admin.dataset.update')) clickable-row @endif" data-href='{{ URL::to('api/admin/datasets/edit/' . $definition->id) }}'>
                 <div class="panel-body"
                     @if($i==0)
                         data-step='3'
@@ -64,7 +52,7 @@
                                 </h4>
                             </div>
                             <div class='col-sm-4 text-right'>
-                                @if(tdt\core\auth\Auth::hasAccess('dataset.view'))
+                                @if(Tdt\Core\Auth\Auth::hasAccess('dataset.view'))
                                     <a href='{{ URL::to($definition->collection_uri . '/' . $definition->resource_name) }}' class='btn' title='View the dataset'
                                         @if($i==0)
                                             data-step='4'
@@ -75,7 +63,7 @@
                                         <i class='fa fa-eye'></i> Data
                                     </a>
                                 @endif
-                                @if(tdt\core\auth\Auth::hasAccess('definition.view'))
+                                @if(Tdt\Core\Auth\Auth::hasAccess('definition.view'))
                                     <a href='{{ URL::to('api/definitions/'. $definition->collection_uri . '/' . $definition->resource_name) }}' class='btn' title='View the JSON definition'
 
                                         @if($i==0)
@@ -87,7 +75,7 @@
                                         <i class='fa fa-external-link'></i> Definition
                                     </a>
                                 @endif
-                                @if(tdt\core\auth\Auth::hasAccess('admin.dataset.delete'))
+                                @if(Tdt\Core\Auth\Auth::hasAccess('admin.dataset.delete'))
                                     <a href='{{ URL::to('api/admin/datasets/delete/'. $definition->id) }}' class='btn delete' title='Delete this dataset'
 
                                        @if($i==0)
@@ -125,6 +113,15 @@
                 @endif
             </div>
         </div>
+    </div>
+
+@stop
+
+@section('navigation')
+
+    <div class="search pull-right">
+        <input id='dataset-filter' type="text" placeholder='Search for datasets' spellcheck='false'>
+        <i class='fa fa-search'></i>
     </div>
 
 @stop

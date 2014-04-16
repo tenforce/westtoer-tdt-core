@@ -2,19 +2,19 @@
 
 @section('content')
 
-    <form class="form-horizontal edit-dataset" role="form" data-mediatype='{{ strtolower($source_definition->getType()) }}'
+    <form class="form-horizontal edit-dataset" role="form" data-mediatype='{{ strtolower($source_definition->type) }}'
         data-identifier='{{ $definition->collection_uri . '/' . $definition->resource_name }}'>
         <div class='row header'>
             <div class="col-sm-7">
                 <h3>
                     <a href='{{ URL::to('api/admin/datasets') }}' class='back'>
-                        <i class='fa fa-angle-left'></i> Back
+                        <i class='fa fa-angle-left'></i>
                     </a>
                     Edit a dataset
                 </h3>
             </div>
             <div class="col-sm-5 text-right">
-                <button type='submit' class='btn btn-cta btn-edit-dataset pull-right margin-left'><i class='fa fa-save'></i> Save</button>
+                <button type='submit' class='btn btn-cta btn-edit-dataset margin-left'><i class='fa fa-save'></i> Save</button>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                     </label>
                     <div class="col-sm-10">
                         <label class="control-label">
-                            {{ $source_definition->getType() }}
+                            {{ $source_definition->type }}
                         </label>
                     </div>
                 </div>
@@ -73,6 +73,8 @@
                         <div class="col-sm-10">
                             @if($object->type == 'string')
                                 <input type="text" class="form-control" id="input_{{ $parameter }}" name="{{ $parameter }}" placeholder="" value='{{ $source_definition->{$parameter} }}'>
+                            @elseif($object->type == 'text')
+                                <textarea class="form-control" id="input_{{ $parameter }}" name="{{ $parameter }}">{{ $source_definition->{$parameter} }}</textarea>
                             @elseif($object->type == 'integer')
                                 <input type="number" class="form-control" id="input_{{ $parameter }}" name="{{ $parameter }}" placeholder="" value='{{ $source_definition->{$parameter} }}'>
                             @elseif($object->type == 'boolean')
@@ -88,6 +90,30 @@
         </div>
 
         <div class="col-sm-6">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">
+                </label>
+                <div class="col-sm-10">
+                    <h4><i class='fa fa-clock-o'></i> Caching</h4>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="input_cache_minutes" class="col-sm-2 control-label">
+                    Cache for
+                </label>
+                <div class="col-sm-10">
+                    <div class="input-group input-medium">
+                        <input type="text" class="form-control" id="input_cache_minutes" name="cache_minutes" placeholder="" value="{{ $definition->cache_minutes }}">
+                        <span class="input-group-addon">minute(s)</span>
+                    </div>
+
+                    <div class='help-block'>
+                        How long should this dataset be cached? Fill out '0' or '-1' to disable caching for this resource (not recommended).
+                    </div>
+                </div>
+            </div>
 
             @if(!empty($parameters_dc))
 
@@ -105,7 +131,16 @@
                             {{ $object->name }}
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="input_{{ $parameter }}" name="{{ $parameter }}" placeholder="" value='{{ $definition->{$parameter} }}'>
+                            @if($object->type == 'string')
+                                <input type="text" class="form-control" id="input_{{ $parameter }}" name="{{ $parameter }}" placeholder="" value='{{ $definition->{$parameter} }}'>
+                            @elseif($object->type == 'list')
+                                <select id="input_{{ $parameter }}" name="{{ $parameter }}">
+                                    <option></option>
+                                    @foreach($object->list as $option)
+                                        <option @if ($definition->{$parameter} == $option) {{ 'selected="selected"' }}@endif>{{ $option }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
                             <div class='help-block'>
                                 {{ $object->description }}
                             </div>

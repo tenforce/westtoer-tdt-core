@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class Initialize extends Migration {
+class Initialize extends Migration
+{
 
     /**
      * Run the migrations.
@@ -19,7 +20,6 @@ class Initialize extends Migration {
             $table->string('resource_name', 255);
             $table->string('source_type', 255);
             $table->integer('source_id');
-            $table->string('documentation', 1024);
 
             // created_at | updated_at DATETIME, are default expected by the Eloquent ORM
             $table->timestamps();
@@ -36,5 +36,4 @@ class Initialize extends Migration {
         // Drop the definitions table
         Schema::drop('definitions');
     }
-
 }
