@@ -138,7 +138,7 @@ class CSVController extends ADataController {
 
         foreach($columns as $column){
             if(!empty($data[$column->index]) || is_numeric(@$data[$column->index])){
-                $result[$column->column_name_alias] = @$data[$column->index];
+                $result[$column->column_name_alias] = utf8_encode(@$data[$column->index]);
             }else{
                 \Log::warning("We expected a value for index $column->index, yet no value was given. Filling in an empty value.");
                 $result[$column->column_name_alias] = null;
