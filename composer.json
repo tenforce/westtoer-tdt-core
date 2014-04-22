@@ -25,14 +25,15 @@
     ],
     "require": {
 
-        "laravel/framework": "4.1.*",
+        "laravel/framework": "4.1.25",
         "phpoffice/phpexcel": "1.*",
         "phpunit/phpunit" : "4.0.*",
         "easyrdf/easyrdf" : "dev-devel",
         "kriswallsmith/buzz": "0.*",
         "cartalyst/sentry": "2.1.*",
         "ml/json-ld" : "@dev",
-        "tdt/input" : "dev-blackwell"
+        "tdt/input" : "dev-blackwell",
+        "doctrine/dbal" : "dev-master"
     },
     "scripts": {
         "post-install-cmd": [

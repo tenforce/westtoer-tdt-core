@@ -9,6 +9,7 @@
 namespace Tdt\Core\Ui;
 
 use Tdt\Core\Auth\Auth;
+use Tdt\Core\Definitions\DiscoveryController;
 
 class DatasetController extends \Controller
 {
@@ -254,18 +255,8 @@ class DatasetController extends \Controller
 
     private function getDiscoveryDocument()
     {
-        // Create a CURL client
-        $cURL = new \Buzz\Client\Curl();
-        $cURL->setVerifyPeer(false);
-        $cURL->setTimeout(30);
-        // Get discovery document
-        $browser = new \Buzz\Browser($cURL);
-        $response = $browser->get(\URL::to('discovery'));
-
-        // Document content
-        $discovery = json_decode($response->getContent());
-
-        $discovery = json_decode(json_encode(DiscoveryController::createDiscoveryDocument()));
+        $disc_controller = \App::make('Tdt\Core\Definitions\DiscoveryController');
+        $discovery = json_decode(json_encode($disc_controller->createDiscoveryDocument()));
 
         return $discovery;
     }

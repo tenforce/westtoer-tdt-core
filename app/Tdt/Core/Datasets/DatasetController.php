@@ -31,9 +31,6 @@ class DatasetController extends ApiController
      */
     public function get($uri)
     {
-        // Set permission
-        Auth::requirePermissions('dataset.view');
-
         // Split for an (optional) extension
         list($uri, $extension) = $this->processURI($uri);
 

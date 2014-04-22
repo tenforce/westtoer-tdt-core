@@ -43,7 +43,7 @@ class DiscoveryController extends ApiController
     /**
      * Create the discovery document
      */
-    private function createDiscoveryDocument()
+    public function createDiscoveryDocument()
     {
 
         // Create and return a dument that holds a self-explanatory document
