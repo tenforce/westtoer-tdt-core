@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1d14527f47b9a1b720c504a770b94b4a",
+    "hash": "e984ddeedd801125935eaac84569d74a",
     "packages": [
         {
             "name": "cartalyst/sentry",
@@ -2688,12 +2688,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "1cd0f9516d3c39126b31bf50bcbf873dc65f29bf"
+                "reference": "09cad223615eac9e229837c9d44792f393529328"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/1cd0f9516d3c39126b31bf50bcbf873dc65f29bf",
-                "reference": "1cd0f9516d3c39126b31bf50bcbf873dc65f29bf",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/09cad223615eac9e229837c9d44792f393529328",
+                "reference": "09cad223615eac9e229837c9d44792f393529328",
                 "shasum": ""
             },
             "require": {
@@ -2746,7 +2746,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2014-04-21 19:33:11"
+            "time": "2014-04-25 09:53:30"
         }
     ],
     "aliases": [

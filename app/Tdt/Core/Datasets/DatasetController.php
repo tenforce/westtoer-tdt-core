@@ -34,6 +34,8 @@ class DatasetController extends ApiController
         // Split for an (optional) extension
         list($uri, $extension) = $this->processURI($uri);
 
+        $this->authenticate($uri);
+
         // Check for caching
         // Based on: URI / Rest parameters / Query parameters / Paging headers
         $cache_string = $uri;
@@ -310,5 +312,25 @@ class DatasetController extends ApiController
             }
         }
         return false;
+    }
+
+    /**
+     * Process specific authentication for the datahub
+     *
+     * @param string $uri The identifier of the request dataset
+     *
+     * @return boolean
+     */
+    private function authenticate($uri)
+    {
+        $uri_pieces = explode('/', $uri);
+
+        $prefix = array_shift($uri_pieces);
+
+        if ($prefix == 'open') {
+            return;
+        }
+
+        Auth::requirePermissions('datahub.view');
     }
 }
