@@ -2,7 +2,7 @@
 <html lang='en'>
     <head profile="http://dublincore.org/documents/dcq-html/">
         <title>{{ $title }}</title>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="DC.title" content="{{ $title }}"/>
@@ -43,6 +43,16 @@
             </ul>
 
             @yield('navigation')
+
+            @if(\Request::header('Authorization', null) === null)
+                <ul class='pull-right nav navbar-nav'>
+                    <li>
+                        <a href="{{ URL::to('api/admin/logout') }}">
+                            <i class='fa fa-sign-out'></i> Sign out
+                        </a>
+                    </li>
+                </ul>
+            @endif
         </nav>
 
         <div class="wrapper">

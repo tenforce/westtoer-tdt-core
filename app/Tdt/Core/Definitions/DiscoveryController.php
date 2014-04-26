@@ -18,7 +18,7 @@ use Tdt\Core\ApiController;
 class DiscoveryController extends ApiController
 {
 
-    public function get($uri)
+    public function get($uri = null)
     {
         // Set permission
         Auth::requirePermissions('discovery.view');
