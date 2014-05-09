@@ -83,7 +83,7 @@ class LDController extends SPARQLController
         $query = 'CONSTRUCT { ?s ?p ?o } ';
         $query .= "WHERE { GRAPH <$graph->graph_id> { ";
         $query .= '?s ?p ?o .';
-        $query .= " FILTER ( regex(?s, \"$subject_uri*\", \"i\"))";//(?s LIKE '$subject_uri') OR (?s LIKE '$subject_uri/%') )";
+        $query .= " FILTER ( regex(?s, \"$subject_uri*\", \"i\"))";
         $query .= '}  } ORDER BY asc(?s)';
 
         // Apply paging parameters to the query
@@ -104,13 +104,31 @@ class LDController extends SPARQLController
         $response = $this->executeUri($query, $endpoint_user, $endpoint_password);
 
         // Parse the triple response and retrieve the triples from them
-        //$result = \ARC2::getRDFXMLParser();
-        //$result->parse('', $response);
-        // Parse the triple response and retrieve the triples from them
-        $result = new \EasyRdf_Graph();
-        $parser = new \EasyRdf_Parser_RdfXml();
+        // EasyRdf sometimes hits the fan and goes awol when encoutering
+        // certain characters, ARC2 (same reason why we used it in tdt/input) doesn't seem to have these problems
 
-        $parser->parse($result, $response, 'rdfxml', null);
+        $graph = new \EasyRdf_Graph();
+
+        try {
+
+            $parser = new \EasyRdf_Parser_RdfXml();
+
+            $parser->parse($graph, $response, 'rdfxml', null);
+
+        } catch (\EasyRdf_Parser_Exception $ex) {
+
+            $result = \ARC2::getRDFXMLParser();
+            $result->parse('', $response);
+
+            // Parse the triple response and retrieve the triples from them
+            $ser = \ARC2::getTurtleSerializer();
+
+            $triples = $ser->getSerializedTriples($result->getTriples());
+
+            $parser = new \EasyRdf_Parser_Turtle();
+
+            $parser->parse($graph, $triples, 'turtle', null);
+        }
 
         $is_semantic = true;
 
@@ -118,7 +136,7 @@ class LDController extends SPARQLController
         $data_result = new Data();
         $data_result->paging = $paging;
         $data_result->is_semantic = true;
-        $data_result->data = $result;
+        $data_result->data = $graph;
         $data_result->semantic = array();
 
         return $data_result;
