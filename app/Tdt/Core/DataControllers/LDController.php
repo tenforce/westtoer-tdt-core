@@ -38,9 +38,14 @@ class LDController extends SPARQLController
         $subject_uri = $graph_name;
 
         // Add the REST parameters to the subject uri
+        // If a REST parameter is present, only get triples with the subject
+        // matching the full URI, if not present, use the base uri as a base, and allow
+        // all matches that the identifier "substrings"
         if (!empty($rest_parameters)) {
             $subject_uri .= '/' . implode('/', $rest_parameters);
-            $subject_uri .= '/';
+            $subject_uri .= '$';
+        } else {
+            $subject_uri .= '*';
         }
 
         // Retrieve the graph instance, if not found then abo`the process
@@ -52,7 +57,8 @@ class LDController extends SPARQLController
         }
 
         // Construct a query that will tell us how many triples there are in the graph
-        $count_query = "SELECT count(?s) AS ?count WHERE { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( regex(?s, \"$subject_uri*\", \"i\") )}}";
+        $count_query = "SELECT count(?s) AS ?count WHERE
+                        { GRAPH <$graph->graph_id> { ?s ?p ?o . FILTER ( regex(?s, \"$subject_uri\", \"i\") )}}";
 
         // Execute the count query for paging purposes
         $count_query = urlencode($count_query);
@@ -83,7 +89,7 @@ class LDController extends SPARQLController
         $query = 'CONSTRUCT { ?s ?p ?o } ';
         $query .= "WHERE { GRAPH <$graph->graph_id> { ";
         $query .= '?s ?p ?o .';
-        $query .= " FILTER ( regex(?s, \"$subject_uri*\", \"i\"))";
+        $query .= " FILTER ( regex(?s, \"$subject_uri\", \"i\"))";
         $query .= '}  } ORDER BY asc(?s)';
 
         // Apply paging parameters to the query
