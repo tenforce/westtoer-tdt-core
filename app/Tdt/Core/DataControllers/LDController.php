@@ -1,6 +1,6 @@
 <?php
 
-namespace Tdt\Core\Datacontrollers;
+namespace Tdt\Core\DataControllers;
 
 use Tdt\Core\Datasets\Data;
 use Tdt\Core\Pager;
