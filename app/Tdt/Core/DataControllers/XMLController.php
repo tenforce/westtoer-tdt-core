@@ -164,7 +164,7 @@ class XMLController extends ADataController
                 if (is_array($output)) {
 
                     // Check if element has attributes
-                    $attributesLength = $noe->attributes->length;
+                    $attributesLength = $node->attributes->length;
 
                     if ($attributesLength > 0) {
 
