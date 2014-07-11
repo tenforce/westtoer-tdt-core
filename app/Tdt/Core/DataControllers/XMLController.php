@@ -36,7 +36,7 @@ class XMLController extends ADataController
 
             if (!empty($data)) {
 
-                $data = $this->XMLStringToArray($data);//XmlUtils::xmlFileToObject($uri);
+                $data = $this->XMLStringToArray($data);
 
                 Cache::put($uri, $data, $source_definition['cache']);
             } else {
