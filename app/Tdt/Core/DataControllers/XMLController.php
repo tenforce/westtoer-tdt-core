@@ -144,6 +144,8 @@ class XMLController extends ADataController
                         // Push the child tag on the array
                         if (count($value) == 1 && !empty($value[$tag])) {
                             $output[$tag] = $value;
+                        } else if (empty($value)) {
+                            $output[$tag] = '';
                         } else {
                             array_push($output[$tag], $value);
                         }
