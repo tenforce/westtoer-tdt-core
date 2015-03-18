@@ -82,12 +82,12 @@ class ExportImportTest extends TestCase
 
         $this->assertEquals($exported_version, $version);
 
-        // The user seeder seeds 2 users
+        // The user seeder seeds 3 users
         $export_users = @$export_body['users'];
 
         $this->assertTrue(!empty($export_users));
 
-        $this->assertEquals(2, count($export_users));
+        $this->assertEquals(3, count($export_users));
 
         // Write the output to a file, necessary to be using in the import
         if (!empty($export_body)) {

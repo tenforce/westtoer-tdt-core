@@ -10,7 +10,7 @@ class HTMLFormatterTEst extends BaseUITest
      */
     public function testTabularDataset()
     {
-        $crawler = $this->client->request('GET', '/csv/geo');
+        $crawler = $this->requestWithAuth('GET', '/csv/geo');
         $this->assertResponseOk();
 
         $this->assertCount(1, $crawler->filter('h1:contains("csv/geo")'));
@@ -23,7 +23,7 @@ class HTMLFormatterTEst extends BaseUITest
      */
     public function testCodeView()
     {
-        $crawler = $this->client->request('GET', '/json/crime');
+        $crawler = $this->requestWithAuth('GET', '/json/crime');
         $this->assertResponseOk();
 
         $this->assertCount(1, $crawler->filter('h1:contains("json/crime")'));
@@ -35,7 +35,7 @@ class HTMLFormatterTEst extends BaseUITest
      */
     public function testMapView()
     {
-        $crawler = $this->client->request('GET', '/dresden/rivers');
+        $crawler = $this->requestWithAuth('GET', '/dresden/rivers');
         $this->assertResponseOk();
 
         $this->assertCount(1, $crawler->filter('iframe'));
