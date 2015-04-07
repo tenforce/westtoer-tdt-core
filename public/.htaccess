@@ -6,12 +6,12 @@
     # Redirect Trailing Slashes...
     #RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-	RewriteRule ^snorql/index.html(.*)$ snorql/index.html$1 [L]
+    #RewriteRule ^snorql/index.html(.*)$ snorql/index.html$1 [L]
+    #RewriteRule ^feeds(.*) feeds$1 [L]
 
-	Options +FollowSymLinks
-	RewriteRule ^feeds(.*) feeds$1 [L]
+    Options +FollowSymLinks
 
-	RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^ index.php [L]
+    RewriteRule ^ index.php [L]
 </IfModule>

@@ -14,3 +14,5 @@ composer.phar
 !/installed/.gitkeep
 app/config/workbench.php
 prelim_logs
+
+public/ext
