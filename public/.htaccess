@@ -6,7 +6,7 @@
     # Redirect Trailing Slashes...
     #RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-    #RewriteRule ^snorql/index.html(.*)$ snorql/index.html$1 [L]
+    RewriteRule ^snorql(.*)$ /ext/snorql$1 [L,R=301]
     #RewriteRule ^feeds(.*) feeds$1 [L]
 
     Options +FollowSymLinks
