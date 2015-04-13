@@ -15,3 +15,6 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+<IfModule mod_php5.c>
+    php_value memory_limit 512M 
+</IfModule>
