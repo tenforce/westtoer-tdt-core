@@ -13,7 +13,8 @@ return array(
         'dataset.view' => 'View datasets',
         // Viewing the info document
         'info.view' => 'View the info document',
-
+	// Viewing private datahub datasets
+        'datahub.view' => 'View private DataHub datasets',
     ),
 
     'Definitions' => array(
