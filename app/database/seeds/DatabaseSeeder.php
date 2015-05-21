@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
 		Eloquent::unguard();
 
 		// Call the user seeder
-		$this->call('UserSeeder');
+		//$this->call('UserSeeder');
 
 		// Call the DcatSeeder
 		$this->call('DcatSeeder');
