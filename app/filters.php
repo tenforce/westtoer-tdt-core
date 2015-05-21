@@ -33,6 +33,23 @@ App::after(function($request, $response)
 |
 */
 
+/**
+*  DataHub specific authentication. User must have 'datahub.view' permission to get access to private datasets
+*/
+Route::filter('auth.tdt', function()
+{
+	$user = Sentry::getUser();
+        $permissions = 'datahub.view';
+        if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
+	if (!$user->hasAccess($permissions)) App::abort(403, 'The authenticated user hasn\'t got the permissions for this action.');
+});
+
+/**
+*  Require authentication on all dataset routes except the ones starting with 'open' and root '/'
+*  Authentication on routes starting with 'api', 'discovery' and 'spectql' is handled by their specific controllers
+*/
+Route::whenRegex('/^(?!api|discovery|spectql|open|\/)(.*)$/', 'auth.tdt');
+
 Route::filter('auth', function()
 {
 	if (Auth::guest()) return Redirect::guest('login');
