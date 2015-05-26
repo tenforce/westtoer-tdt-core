@@ -39,9 +39,10 @@ App::after(function($request, $response)
 Route::filter('auth.tdt', function()
 {
 	$user = Sentry::getUser();
+	$superadmin = \Sentry::findGroupByName('superadmin');
         $permissions = 'datahub.view';
         if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
-	if (!$user->hasAccess($permissions)) App::abort(403, 'The authenticated user hasn\'t got the permissions for this action.');
+	if (!$user->hasAccess($permissions) and !$user->inGroup($superadmin)) App::abort(403, 'The authenticated user hasn\'t got the permissions for this action.');
 });
 
 /**
