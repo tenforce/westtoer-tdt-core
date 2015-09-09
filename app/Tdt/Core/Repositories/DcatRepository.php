@@ -67,6 +67,11 @@ class DcatRepository implements DcatRepositoryInterface
         $graph->addResource($all_settings['catalog_publisher_uri'], 'a', 'foaf:Agent');
         $graph->addLiteral($all_settings['catalog_publisher_uri'], 'foaf:name', $all_settings['catalog_publisher_name']);
 
+        // Add the Westtoer Vcard
+        $westtoer_vcard_uri = $uri . '/api/dcat/vcard/westtoer';
+        $graph->addResource($westtoer_vcard_uri, 'a', 'vcard:Organization');
+        $graph->addResource($westtoer_vcard_uri, 'vcard:hasEmail', 'mailto:datahub@westtoer.be');
+
         if (count($definitions) > 0) {
 
             // Add the last modified timestamp in ISO8601
@@ -95,12 +100,13 @@ class DcatRepository implements DcatRepositoryInterface
                 }
                 $graph->addLiteral($dataset_uri, 'dct:title', $title);
 
-                // Add the description, identifier, issues, modified and landing page of the dataset
+                // Add the description, identifier, issues, modified, landing page and contact point of the dataset
                 $graph->addLiteral($dataset_uri, 'dct:description', @$definition['description']);
                 $graph->addLiteral($dataset_uri, 'dct:identifier', str_replace(' ', '%20', $definition['collection_uri'] . '/' . $definition['resource_name']));
                 $graph->addLiteral($dataset_uri, 'dct:issued', date(\DateTime::ISO8601, strtotime($definition['created_at'])));
                 $graph->addLiteral($dataset_uri, 'dct:modified', date(\DateTime::ISO8601, strtotime($definition['updated_at'])));
                 $graph->addResource($dataset_uri, 'dcat:landingPage', $dataset_uri);
+                $graph->addResource($dataset_uri, 'dcat:contactPoint', $westtoer_vcard_uri);
 
                 // Add the publisher resource to the dataset
                 if (!empty($definition['publisher_name']) && !empty($definition['publisher_uri'])) {
@@ -207,6 +213,7 @@ class DcatRepository implements DcatRepositoryInterface
             'rdf'  => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
             'rdfs' => 'http://www.w3.org/2000/01/rdf-schema#',
             'owl'  => 'http://www.w3.org/2002/07/owl#',
+            'vcard' => 'http://www.w3.org/2006/vcard/ns#',
         );
     }
 }
