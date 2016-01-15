@@ -9,6 +9,7 @@
 namespace Tdt\Core\Ui;
 
 use Tdt\Core\Auth\Auth;
+use Tdt\Core\Definitions\DiscoveryController;
 
 class DatasetController extends UiController
 {
@@ -38,7 +39,6 @@ class DatasetController extends UiController
 
         // Set permission
         Auth::requirePermissions('admin.dataset.create');
-
         $discovery = $this->getDiscoveryDocument();
 
         // Get spec for media types
@@ -88,7 +88,6 @@ class DatasetController extends UiController
 
 
                         $parameters_dc[$parameter] = $object;
-
                     } else {
                         // Fitler optional vs required
                         if ($object->required) {
@@ -251,19 +250,11 @@ class DatasetController extends UiController
         return \Redirect::to('api/admin/datasets');
     }
 
+
     private function getDiscoveryDocument()
     {
-        // Create a CURL client
-        $cURL = new \Buzz\Client\Curl();
-        $cURL->setVerifyPeer(false);
-        $cURL->setTimeout(30);
-
-        // Get discovery document
-        $browser = new \Buzz\Browser($cURL);
-        $response = $browser->get(\URL::to('discovery'));
-
-        // Document content
-        $discovery = json_decode($response->getContent());
+        $disc_controller = \App::make('Tdt\Core\Definitions\DiscoveryController');
+        $discovery = json_decode(json_encode($disc_controller->createDiscoveryDocument()));
 
         return $discovery;
     }

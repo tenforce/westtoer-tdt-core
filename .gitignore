@@ -16,3 +16,5 @@ app/config/workbench.php
 public/packages
 workbench
 node_modules/
+prelim_logs
+

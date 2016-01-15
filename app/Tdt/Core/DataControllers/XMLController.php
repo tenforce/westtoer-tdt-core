@@ -39,7 +39,9 @@ class XMLController extends ADataController
             $data =@ file_get_contents($uri);
 
             if (!empty($data)) {
+
                 $data = $this->XMLStringToArray($data);
+
                 Cache::put($uri, $data, $source_definition['cache']);
             } else {
                 $uri = $source_definition['uri'];
@@ -144,16 +146,23 @@ class XMLController extends ADataController
                         }
 
                         // Push the child tag on the array
-                        $output[$tag][] = $value;
+                        if (count($value) == 1 && !empty($value[$tag])) {
+                            $output[$tag] = $value;
+                        } else if (empty($value)) {
+                            $output[$tag] = '';
+                        } else {
+                            array_push($output[$tag], $value);
+                        }
 
                     } elseif ($value) {
 
                         // Child is plain text, preliminary solution
                         if (empty($output['@text'])) {
-                            $output['@text'] = array();
+                            //$output['@text'] = array();
                         }
 
-                        array_push($output['@text'], (string) $value);
+                        //array_push($output['@text'], (string) $value);
+                        $output[$node->tagName] = (string) $value;
                     }
                 }
 
@@ -176,18 +185,24 @@ class XMLController extends ADataController
                         }
 
                         if (!empty($attributes)) {
-                            $output['@attributes'] = $attributes;
+                            //$output['@attributes'] = $attributes;
+                            foreach ($attributes as $key => $val) {
+                                $output['_' . $key] = $val;
+                            }
                         }
 
                     }
+
                     // For each of the element's children
                     foreach ($output as $tag => $value) {
 
                         if (is_array($value) && count($value) == 1 && $tag != '@attributes') {
-                            $output[$tag] = @$value[0];
+
+                            $output[$tag] = array_shift($value);
                         }
                     }
                 } else {
+
                     // Element is a text node, but can still have attributes
                     $value = $output;
 
@@ -206,11 +221,15 @@ class XMLController extends ADataController
                         }
 
                         if (!empty($attributes)) {
-                            $output['@attributes'] = $attributes;
+                            //$output['@attributes'] = $attributes;
+                            foreach ($attributes as $key => $val) {
+                                $output['_' . $key] = $val;
+                            }
                         }
                     }
 
-                    array_push($output['@text'], $value);
+                    //array_push($output['@text'], $value);
+                    $output = $value;
 
                 }
                 break;

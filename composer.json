@@ -1,3 +1,4 @@
+
 {
     "name": "tdt/core",
     "description": "A RESTful data adapter",
@@ -15,6 +16,12 @@
             "Tdt\\Core": "app/"
         }
     },
+    "repositories": [
+        {
+            "type" : "vcs",
+            "url" : "https://github.com/westtoer/tdt-input"
+        }
+    ],
     "require": {
         "laravel/framework": "4.1.29",
         "phpoffice/phpexcel": "1.8.0",

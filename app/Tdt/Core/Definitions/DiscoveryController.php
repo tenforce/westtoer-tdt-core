@@ -20,7 +20,6 @@ class DiscoveryController extends ApiController
 
     public function get($uri = null)
     {
-
         // Set permission
         Auth::requirePermissions('discovery.view');
 
@@ -28,7 +27,7 @@ class DiscoveryController extends ApiController
 
         // If the input package is installed, add it to the discovery document
         if (class_exists('Tdt\Input\Controllers\DiscoveryController')) {
-            $discovery_class = 'tdt\input\controllers\DiscoveryController';
+            $discovery_class = 'Tdt\Input\Controllers\DiscoveryController';
             $discovery_document->resources->input = $discovery_class::createDiscoveryDocument();
         }
 

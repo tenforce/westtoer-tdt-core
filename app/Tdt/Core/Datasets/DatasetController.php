@@ -21,7 +21,6 @@ use Tdt\Core\Formatters\FormatHelper;
  */
 class DatasetController extends ApiController
 {
-
     /**
      * Retrieve a Data object identified by $uri
      *
@@ -36,6 +35,8 @@ class DatasetController extends ApiController
 
         // Split for an (optional) extension
         list($uri, $extension) = $this->processURI($uri);
+
+        $this->authenticate($uri);
 
         // Check for caching
         // Based on: URI / Rest parameters / Query parameters / Paging headers
@@ -76,13 +77,15 @@ class DatasetController extends ApiController
                         $rest_parameters = array();
                     }
 
+                    $source_definition['datatank_identifier'] = $definition['collection_uri'] . '/' . $definition['resource_name'];
+
                     // Retrieve dataobject from datacontroller
                     $data = $data_controller->readData($source_definition, $rest_parameters);
 
                     $data->rest_parameters = $rest_parameters;
 
                     // REST filtering
-                    if ($source_type != 'INSTALLED' && count($data->rest_parameters) > 0) {
+                    if (!$data->is_semantic && $source_type != 'INSTALLED' && count($data->rest_parameters) > 0) {
                         $data->data = self::applyRestFilter($data->data, $data->rest_parameters);
                     }
 
@@ -342,5 +345,25 @@ class DatasetController extends ApiController
             }
         }
         return false;
+    }
+
+    /**
+     * Process specific authentication for the datahub
+     *
+     * @param string $uri The identifier of the request dataset
+     *
+     * @return boolean
+     */
+    private function authenticate($uri)
+    {
+        $uri_pieces = explode('/', $uri);
+
+        $prefix = array_shift($uri_pieces);
+
+        if ($prefix == 'open') {
+            return;
+        }
+
+        Auth::requirePermissions('datahub.view');
     }
 }

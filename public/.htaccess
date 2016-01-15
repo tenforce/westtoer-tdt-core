@@ -1,14 +1,16 @@
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews
-    </IfModule>
 
+    Options -MultiViews
     RewriteEngine On
 
     # Redirect Trailing Slashes...
     # RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-    # Handle Front Controller...
+    RewriteRule ^snorql/index.html(.*)$ snorql/index.html$1 [L]
+
+    Options +FollowSymLinks
+    RewriteRule ^feeds(.*) feeds$1 [L]
+
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]

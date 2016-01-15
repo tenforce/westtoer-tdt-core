@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "Authentication Required"
+AuthUserFile "/home/datahubtest/tdt-core/.htpasswd"
+Require valid-user
+

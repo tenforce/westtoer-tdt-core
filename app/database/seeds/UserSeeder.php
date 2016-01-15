@@ -36,6 +36,24 @@ class UserSeeder extends Seeder
             ),
         ));
 
+        Sentry::getUserProvider()->create(array(
+            'email'       => 'datahub',
+            'password'    => 'DrumPollem',
+            'first_name'  => 'Jane',
+            'last_name'   => 'Appleseed',
+            'activated'   => 1,
+        ));
+
+        Sentry::getGroupProvider()->create(array(
+            'name'        => 'datahub',
+            'permissions' => array(
+                'discovery.view' => 1,
+                'dataset.view' => 1,
+                'info.view' => 1,
+                'datahub.view' => 1
+            ),
+        ));
+
         // Create admin user and group
         Sentry::getUserProvider()->create(array(
             'email'       => 'admin',
@@ -59,6 +77,11 @@ class UserSeeder extends Seeder
         $adminGroup = Sentry::getGroupProvider()->findByName('superadmin');
         $adminUser->addGroup($adminGroup);
         $this->command->info('Succesfully added user "admin".');
+
+        $dataUser  = Sentry::getUserProvider()->findByLogin('datahub');
+        $datahubGroup = Sentry::getGroupProvider()->findByName('datahub');
+        $dataUser->addGroup($datahubGroup);
+        $this->command->info('Succesfully added user "datahub".');
 
     }
 }
