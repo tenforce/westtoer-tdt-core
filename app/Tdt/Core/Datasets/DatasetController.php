@@ -45,23 +45,30 @@ class DatasetController extends ApiController
         list($limit, $offset) = Pager::calculateLimitAndOffset();
 
         $cache_string .= '/limit=' . $limit . 'offset=' . $offset;
-        $cache_string .= http_build_query(\Input::except('limit', 'offset', 'page', 'page_size'));
+        $omit = ['limit', 'offset', 'page', 'page_size'];
+
+        $query_string_params = \Input::get();
+
+        foreach ($query_string_params as $key => $val) {
+            if (in_array($key, $omit)) {
+                unset($query_string_params[$key]);
+            }
+        }
+
+        $cache_string .= http_build_query($query_string_params);
         $cache_string = sha1($cache_string);
 
         if (Cache::has($cache_string)) {
             return ContentNegotiator::getResponse(Cache::get($cache_string), $extension);
         } else {
-
             // Get definition
             $definition = $this->definition->getByIdentifier($uri);
 
             if ($definition) {
-
                 // Get source definition
                 $source_definition = $this->definition->getDefinitionSource($definition['source_id'], $definition['source_type']);
 
                 if ($source_definition) {
-
                     $source_type = $source_definition['type'];
 
                     // Create the right datacontroller
@@ -69,12 +76,14 @@ class DatasetController extends ApiController
                     $data_controller = \App::make($controller_class);
 
                     // Get REST parameters
-                    $rest_parameters = str_replace($definition['collection_uri'] . '/' . $definition['resource_name'], '', $uri);
-                    $rest_parameters = ltrim($rest_parameters, '/');
-                    $rest_parameters = explode('/', $rest_parameters);
 
-                    if (empty($rest_parameters[0]) && !is_numeric($rest_parameters[0])) {
-                        $rest_parameters = array();
+                    $uri_segments = explode('/', $uri);
+                    $rest_parameters = array_diff($uri_segments, array($definition['collection_uri'], $definition['resource_name']));
+                    $rest_parameters = array_values($rest_parameters);
+
+                    $throttle_response = $this->applyThrottle($definition);
+                    if (!empty($throttle_response)) {
+                        return $throttle_response;
                     }
 
                     $source_definition['datatank_identifier'] = $definition['collection_uri'] . '/' . $definition['resource_name'];
@@ -82,11 +91,60 @@ class DatasetController extends ApiController
                     // Retrieve dataobject from datacontroller
                     $data = $data_controller->readData($source_definition, $rest_parameters);
 
+                    // If the source type is XML, just return the XML contents, don't transform
+                    if (strtolower($source_type) == 'xml' && $extension == 'xml') {
+                        return $this->createXMLResponse($data->data);
+                    }
+
                     $data->rest_parameters = $rest_parameters;
 
                     // REST filtering
                     if (!$data->is_semantic && $source_type != 'INSTALLED' && count($data->rest_parameters) > 0) {
                         $data->data = self::applyRestFilter($data->data, $data->rest_parameters);
+                    }
+
+                    // Semantic paging with the hydra voc
+                    if ($data->is_semantic && !empty($data->paging)) {
+                        \EasyRdf_Namespace::set('hydra', 'http://www.w3.org/ns/hydra/core#');
+                        $graph = $data->data;
+                        $url = \URL::to($definition['collection_uri'] . '/' . $definition['resource_name']);
+
+                        $request_url = \Request::url();
+                        $graph->addResource($request_url, 'void:subset', $url);
+
+                        foreach ($data->paging as $key => $val) {
+                            $paged_url = $request_url . '?offset=' . $val[0] . '&limit=' . $val[1] . Pager::buildQuerystring();
+
+                            switch ($key) {
+                                case 'next':
+                                    $graph->addResource($request_url, 'hydra:nextPage', $paged_url);
+                                    break;
+                                case 'previous':
+                                    $graph->addResource($request_url, 'hydra:previousPage', $paged_url);
+                                    break;
+                                case 'last':
+                                    $graph->addResource($request_url, 'hydra:lastPage', $paged_url);
+                                    break;
+                                case 'first':
+                                    $graph->addResource($request_url, 'hydra:firstPage', $paged_url);
+                                    break;
+                            }
+                        }
+
+                        $graph->addResource($url, 'a', 'dcat:Dataset');
+
+                        $title = null;
+                        if (!empty($definition['title'])) {
+                            $title = $definition['title'];
+                        } else {
+                            $title = $definition['collection_uri'] . '/' . $definition['resource_name'];
+                        }
+
+                        $graph->addLiteral($url, 'dc:title', $title);
+                        $graph->addLiteral($url, 'dc:description', $source_definition['description']);
+                        $graph->addResource($url, 'dcat:distribution', $url . '.json');
+
+                        $data->data = $graph;
                     }
 
                     // Add definition to the object
@@ -109,19 +167,16 @@ class DatasetController extends ApiController
                 }
 
             } else {
-
                 // Coulnd't find a definition, but it might be a collection
                 $resources = $this->definition->getByCollection($uri);
 
                 if (count($resources) > 0) {
-
                     $data = new Data();
                     $data->data = new \stdClass();
                     $data->data->datasets = array();
                     $data->data->collections = array();
 
                     foreach ($resources as $res) {
-
                         // Check if it's a subcollection or a dataset
                         $collection_uri = rtrim($res['collection_uri'], '/');
                         if ($collection_uri == $uri) {
@@ -173,7 +228,6 @@ class DatasetController extends ApiController
         $response = new \Response();
 
         if ($definition) {
-
             $response = \Response::make(null, 200);
 
         } else {
@@ -208,7 +262,6 @@ class DatasetController extends ApiController
         $formatter_class = 'Tdt\\Core\\Formatters\\' . $possible_extension . 'Formatter';
 
         if (!class_exists($formatter_class)) {
-
             // Re-attach the dot with the latter part of the uri
             $uri .= '.' . strtolower($possible_extension);
 
@@ -228,13 +281,10 @@ class DatasetController extends ApiController
      */
     private static function applyRestFilter($data, $rest_params)
     {
-
         foreach ($rest_params as $rest_param) {
-
             if (is_object($data) && $key = self::propertyExists($data, $rest_param)) {
                 $data = $data->$key;
             } elseif (is_array($data)) {
-
                 if ($key = self::keyExists($data, $rest_param)) {
                     $data = $data[$key];
                 } elseif (is_numeric($rest_param)) {
@@ -268,24 +318,18 @@ class DatasetController extends ApiController
         $definition = $definition_repo->getByIdentifier($identifier);
 
         if ($definition) {
-
             // Get the source definition
             $source_definition = $definition_repo->getDefinitionSource($definition['source_id'], $definition['source_type']);
 
             if ($source_definition) {
-
                 // Create the correct datacontroller
                 $controller_class = 'Tdt\\Core\\DataControllers\\' . $source_definition['type'] . 'Controller';
                 $data_controller = \App::make($controller_class);
 
                 // Get REST parameters
-                $rest_parameters = str_replace($definition['collection_uri'] . '/' . $definition['resource_name'], '', $identifier);
-                $rest_parameters = ltrim($rest_parameters, '/');
-                $rest_parameters = explode('/', $rest_parameters);
-
-                if (empty($rest_parameters[0]) && !is_numeric($rest_parameters[0])) {
-                    $rest_parameters = array();
-                }
+                $uri_segments = \Request::segments();
+                $rest_parameters = array_diff($uri_segments, array($definition['collection_uri'], $definition['resource_name']));
+                $rest_parameters = array_values($rest_parameters);
 
                 // Retrieve dataobject from datacontroller
                 $data = $data_controller->readData($source_definition, $rest_parameters);
@@ -365,5 +409,52 @@ class DatasetController extends ApiController
         }
 
         Auth::requirePermissions('datahub.view');
+     }	
+
+    /**	
+     * Return an XML response
+     *
+     * @return \Response
+     */
+    public function createXMLResponse($data)
+    {
+        // Create response
+        $response = \Response::make($data, 200);
+
+        // Set headers
+        return $response->header('Content-Type', 'text/xml;charset=UTF-8');
+    }
+
+    /**
+     * Throttle on the basis of source type
+     *
+     * @param array $definition
+     *
+     * @return Response
+     */
+    private function applyThrottle($definition)
+    {
+        if ($definition['source_type'] == 'ElasticsearchDefinition') {
+            $requestsPerHour = 720;
+
+            // Rate limit by IP address
+            $key = sprintf('api:%s', \Request::getClientIp());
+
+            // Add if doesn't exist
+            // Remember for 1 hour
+            \Cache::add($key, 0, 60);
+
+            // Add to count
+            $count = \Cache::get($key);
+
+            if ($count > $requestsPerHour) {
+                $response = \Response::make('', 429);
+                $response->setContent('Rate limit exceeded, maximum of ' . $requestsPerHour . ' requests per hour has been reached.');
+
+                return $response;
+            } else {
+                \Cache::increment($key);
+            }
+        }
     }
 }

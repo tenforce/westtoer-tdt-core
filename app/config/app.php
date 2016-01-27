@@ -26,7 +26,7 @@ return array(
     | functionality.
     |
     */
-    'version' => '5.6.1',
+    'version' => '5.12.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return array(
     |
     */
 
-    'key' => 'DRxTeqqWmVnqCKNz1dMB3F25jaLIDwCq',
+    'key' => 'OQp2ixXYOt2faVaxHr8vInAHCg3uxV67',
 
     /*
     |--------------------------------------------------------------------------
@@ -91,7 +91,6 @@ return array(
     |
     */
     'providers' => array(
-
         'Illuminate\Foundation\Providers\ArtisanServiceProvider',
         'Illuminate\Auth\AuthServiceProvider',
         'Illuminate\Cache\CacheServiceProvider',
@@ -119,7 +118,9 @@ return array(
         'Illuminate\View\ViewServiceProvider',
         'Illuminate\Workbench\WorkbenchServiceProvider',
         'Cartalyst\Sentry\SentryServiceProvider',
-        'Tdt\Core\Repositories\DbServiceProvider'
+        'Tdt\Core\Repositories\DbServiceProvider',
+        'Tdt\Core\Analytics\TrackerServiceProvider',
+        'Tdt\Input\InputServiceProvider',
     ),
 
     /*
@@ -185,7 +186,6 @@ return array(
         'URL'             => 'Illuminate\Support\Facades\URL',
         'Validator'       => 'Illuminate\Support\Facades\Validator',
         'View'            => 'Illuminate\Support\Facades\View',
-
     ),
 
 );
