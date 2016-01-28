@@ -116,7 +116,7 @@ class DefinitionRepository extends BaseDefinitionRepository implements Definitio
 
     public function getAllPublished($limit = PHP_INT_MAX, $offset = 0)
     {
-        return \Definition::take($limit)->skip($offset)->get()->toArray();
+        return \Definition::where('collection_uri', 'like', 'open/%')->take($limit)->skip($offset)->get()->toArray();
     }
 
 
@@ -164,7 +164,7 @@ class DefinitionRepository extends BaseDefinitionRepository implements Definitio
      */
     public function countPublished()
     {
-        return \Definition::count();
+        return \Definition::where('collection_uri', 'like', 'open/%')->count();
     }
 
     public function getDefinitionSource($id, $name)
