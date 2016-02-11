@@ -57,7 +57,7 @@ return array(
 			'host'      => 'localhost',
 			'database'  => 'dhub_tdt',
 			'username'  => 'dhub_tdt',
-			'password'  => 'cH6V@@7hun',
+			'password'  => '',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
