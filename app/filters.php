@@ -1,5 +1,6 @@
 <?php
 
+use Tdt\Core\Auth;
 /*
 |--------------------------------------------------------------------------
 | Application & Route Filters
@@ -38,7 +39,9 @@ App::after(function($request, $response)
 */
 Route::filter('auth.tdt', function()
 {
+        \LOG::warning('test user');
 	$user = Sentry::getUser();
+        \LOG::warning($user);
 	$superadmin = \Sentry::findGroupByName('superadmin');
         $permissions = 'datahub.view';
         if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
@@ -46,10 +49,44 @@ Route::filter('auth.tdt', function()
 });
 
 /**
+* 
+*/
+
+Route::filter('auth.tdt2', function()
+{
+        \LOG::warning('filter (auth.tdt2) called');
+	$user = Sentry::getUser();
+        \LOG::warning($user);
+        $user = strtolower(\Request::header('PHP_AUTH_USER'));
+        $password = \Request::header('PHP_AUTH_PW');
+        $auth_header = \Request::header('Authorization');
+
+        $debugallheaders=getallheaders(); 
+        \Log::warning("Authentication request.");
+        \Log::warning($auth_header);
+        \Log::warning($debugallheaders);
+        if (!empty($auth_header)) {
+            list($user, $password) = explode(':', base64_decode(substr($auth_header, 6)));}
+        \LOG::warning('filter (auth.tdt2) testing user account');
+        \LOG::warning($user);
+	$superadmin = \Sentry::findGroupByName('superadmin');
+        \LOG::warning($superadmin);
+	$myuser = \Sentry::findUserByLogin($user);
+        \LOG::warning($myuser);
+        $permissions = 'datahub';
+        if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
+	if (!$myuser->hasAccess($permissions) and !$myuser->inGroup($superadmin)) {
+	   \LOG::warning('testing of user access permissions and group membership failed');
+	   App::abort(403, 'The authenticated user hasn\'t got the permissions for this action.');
+        };
+});
+
+/**
 *  Require authentication on all dataset routes except the ones starting with 'open' and root '/'
 *  Authentication on routes starting with 'api', 'discovery' and 'spectql' is handled by their specific controllers
 */
-Route::whenRegex('/^(?!api|discovery|spectql|open|\/)(.*)$/', 'auth.tdt');
+//Route::whenRegex('/^(?!api|discovery|spectql|open|\/)(.*)$/', 'auth.tdt');
+Route::whenRegex('/^(?!api|discovery|spectql|open|\/)(.*)$/', 'auth.tdt2');
 
 Route::filter('auth', function()
 {
@@ -62,6 +99,10 @@ Route::filter('auth.basic', function()
 	return Auth::basic();
 });
 
+Route::filter('auth.basic2', function()
+{
+	return Auth::basicAuth();
+});
 /*
 |--------------------------------------------------------------------------
 | Guest Filter
