@@ -40,7 +40,7 @@ App::after(function($request, $response)
 Route::filter('auth.tdt', function()
 {
         \LOG::warning('test user');
-	$user = Sentry::getUser();
+	$user = \Sentry::getUser();
         \LOG::warning($user);
 	$superadmin = \Sentry::findGroupByName('superadmin');
         $permissions = 'datahub.view';
@@ -55,9 +55,16 @@ Route::filter('auth.tdt', function()
 Route::filter('auth.tdt2', function()
 {
         \LOG::warning('filter (auth.tdt2) called');
-	$user = Sentry::getUser();
-        \LOG::warning($user);
-        $user = strtolower(\Request::header('PHP_AUTH_USER'));
+	$userfromcookie = \Sentry::getUser();
+        \LOG::warning($userfromcookie);
+        if ($userfromcookie) {
+            $user = $userfromcookie->email;
+        };
+        if (!$userfromcookie) {
+            \LOG::warning('no user found - no cookie , try the header PHP_AUTH_USER');
+            $user = strtolower(\Request::header('PHP_AUTH_USER'));
+            \LOG::warning($user);
+        } ;
         $password = \Request::header('PHP_AUTH_PW');
         $auth_header = \Request::header('Authorization');
 
@@ -73,7 +80,7 @@ Route::filter('auth.tdt2', function()
         \LOG::warning($superadmin);
 	$myuser = \Sentry::findUserByLogin($user);
         \LOG::warning($myuser);
-        $permissions = 'datahub';
+        $permissions = 'datahub.view';
         if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
 	if (!$myuser->hasAccess($permissions) and !$myuser->inGroup($superadmin)) {
 	   \LOG::warning('testing of user access permissions and group membership failed');
