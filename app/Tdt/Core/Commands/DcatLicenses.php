@@ -32,14 +32,15 @@ class DcatLicenses extends Command
      *
      * @var string
      */
-    protected $licenses_uri = 'https://raw.githubusercontent.com/tdt/licenses/master/';
+    //protected $licenses_uri = 'https://raw.githubusercontent.com/tdt/licenses/master/';
+    protected $licenses_uri = 'https://raw.githubusercontent.com/bertvannuffelen/rommel/master/';
 
     /**
      * The default license
      *
      * @var string
      */
-    protected $DEFAULT_LICENSE = 'international_licenses';
+    protected $DEFAULT_LICENSE = 'TDT_licenses';
 
     /**
      * Create a new command instance.

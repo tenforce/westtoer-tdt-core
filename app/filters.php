@@ -78,10 +78,11 @@ Route::filter('auth.tdt2', function()
         \LOG::warning($user);
 	$superadmin = \Sentry::findGroupByName('superadmin');
         \LOG::warning($superadmin);
+        if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
 	$myuser = \Sentry::findUserByLogin($user);
         \LOG::warning($myuser);
         $permissions = 'datahub.view';
-        if (!$user) return Redirect::to('api/admin/login?return=' . Request::path());
+        if (!$myuser) return Redirect::to('api/admin/login?return=' . Request::path());
 	if (!$myuser->hasAccess($permissions) and !$myuser->inGroup($superadmin)) {
 	   \LOG::warning('testing of user access permissions and group membership failed');
 	   App::abort(403, 'The authenticated user hasn\'t got the permissions for this action.');

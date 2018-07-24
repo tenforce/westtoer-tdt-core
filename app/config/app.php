@@ -40,6 +40,7 @@ return array(
     */
 
     'url' => 'http://localhost',
+//    'url' => 'http://213.32.106.108', Not needed because external apache uses ProxyPreserveHost on
 
     /*
     |--------------------------------------------------------------------------

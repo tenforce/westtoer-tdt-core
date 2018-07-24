@@ -78,6 +78,7 @@ class Auth extends \Controller
                 return true;
             } else {
                 // Redirect to login
+			\Log::warning("Auth.php/LogIn Redirect.");
                 header('Location: ' . \URL::to('api/admin/login?return=' . \Request::path()));
                 die();
             }
@@ -134,6 +135,12 @@ class Auth extends \Controller
         self::$user = strtolower(\Request::header('PHP_AUTH_USER'));
         self::$password = \Request::header('PHP_AUTH_PW');
         $auth_header = \Request::header('Authorization');
+        $debugallheaders=getallheaders(); 
+
+	\Log::warning("Authentication request.");
+	\Log::warning($auth_header);
+	\Log::warning($debugallheaders);
+
 
         if (!empty($auth_header)) {
             list(self::$user, self::$password) = explode(':', base64_decode(substr($auth_header, 6)));

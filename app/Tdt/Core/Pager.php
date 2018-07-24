@@ -19,7 +19,7 @@ class Pager
                     'first' => 'http://www.w3.org/ns/hydra/core#firstPage'
                     );
 
-    protected static $DEFAULT_PAGE_SIZE = 500;
+    protected static $DEFAULT_PAGE_SIZE = 9500;
 
     /**
      * Provide paging headers in the response using the Link HTTP header.

@@ -9,6 +9,10 @@ use Tdt\Core\Repositories\Interfaces\SettingsRepositoryInterface;
 use Tdt\Core\Repositories\Interfaces\ThemeRepositoryInterface;
 use User;
 
+
+
+use Tdt\Core\Formatters\FormatHelper;
+
 class DcatRepository implements DcatRepositoryInterface
 {
     private $GEO_TYPES = ['ShpDefinition'];
@@ -48,12 +52,15 @@ class DcatRepository implements DcatRepositoryInterface
 
         // Fetch the catalog description, issued date and language
         $graph->addLiteral($uri . '/api/dcat', 'dct:description', $all_settings['catalog_description']);
-        $graph->addLiteral($uri . '/api/dcat', 'dct:issued', $this->getIssuedDate());
+	$issuedate=$this->getIssuedDate();
+        $graph->addLiteral($uri . '/api/dcat', 'dct:issued', $this->DT($issuedate) );
+        //$graph->addLiteral($uri . '/api/dcat', 'dct:issued', new \DateTime($issuedate) );
 
-        $lang = $this->languages->getByCode($all_settings['catalog_language']);
+//        $lang = $this->languages->getByCode($all_settings['catalog_language']);
 
         if (!empty($lang)) {
-            $graph->addResource($uri . '/api/dcat', 'dct:language', 'http://lexvo.org/id/iso639-3/' . $lang['lang_id']);
+            //$graph->addResource($uri . '/api/dcat', 'dct:language', 'http://lexvo.org/id/iso639-3/' . $lang['lang_id']);
+            $graph->addResource($uri . '/api/dcat', 'dct:language', 'http://publications.europa.eu/resource/authority/language/NLD');
             $graph->addResource('http://lexvo.org/id/iso639-3/' . $lang['lang_id'], 'a', 'dct:LinguisticSystem');
         }
 
@@ -69,7 +76,7 @@ class DcatRepository implements DcatRepositoryInterface
 
         if (count($definitions) > 0) {
             // Add the last modified timestamp in ISO8601
-            $graph->addLiteral($uri . '/api/dcat', 'dct:modified', date(\DateTime::ISO8601, strtotime($oldest_definition['updated_at'])));
+            $graph->addLiteral($uri . '/api/dcat', 'dct:modified', $this->DT(date(\DateTime::ISO8601, strtotime($oldest_definition['updated_at']))));
 
             foreach ($definitions as $definition) {
                 // Create the dataset uri
@@ -95,8 +102,8 @@ class DcatRepository implements DcatRepositoryInterface
                 // Add the description, identifier, issues, modified, landing page and contact point of the dataset
                 $graph->addLiteral($dataset_uri, 'dct:description', @$definition['description']);
                 $graph->addLiteral($dataset_uri, 'dct:identifier', str_replace(' ', '%20', $definition['collection_uri'] . '/' . $definition['resource_name']));
-                $graph->addLiteral($dataset_uri, 'dct:issued', date(\DateTime::ISO8601, strtotime($definition['created_at'])));
-                $graph->addLiteral($dataset_uri, 'dct:modified', date(\DateTime::ISO8601, strtotime($definition['updated_at'])));
+                $graph->addLiteral($dataset_uri, 'dct:issued', $this->DT(date(\DateTime::ISO8601, strtotime($definition['created_at']))));
+                $graph->addLiteral($dataset_uri, 'dct:modified', $this->DT(date(\DateTime::ISO8601, strtotime($definition['updated_at']))));
                 $graph->addResource($dataset_uri, 'dcat:landingPage', $dataset_uri);
 
                 // Backwards compatibility
@@ -132,9 +139,13 @@ class DcatRepository implements DcatRepositoryInterface
                         if ($dc_term == 'language') {
                             $lang = $this->languages->getByName($definition[$dc_term]);
 
+//                            if (!empty($lang)) {
+//                                $graph->addResource($dataset_uri, 'dct:' . $dc_term, 'http://lexvo.org/id/iso639-3/' . $lang['lang_id']);
+//                                $graph->addResource('http://lexvo.org/id/iso639-3/' . $lang['lang_id'], 'a', 'dct:LinguisticSystem');
+//                           }
                             if (!empty($lang)) {
-                                $graph->addResource($dataset_uri, 'dct:' . $dc_term, 'http://lexvo.org/id/iso639-3/' . $lang['lang_id']);
-                                $graph->addResource('http://lexvo.org/id/iso639-3/' . $lang['lang_id'], 'a', 'dct:LinguisticSystem');
+                                $graph->addResource($dataset_uri, 'dct:' . $dc_term, 'http://publications.europa.eu/resource/authority/language/NLD');
+                                $graph->addResource('http://publications.europa.eu/resource/authority/language/NLD' , 'a', 'dct:LinguisticSystem');
                             }
                         } elseif ($dc_term == 'theme') {
                             $theme = $this->themes->getByLabel($definition[$dc_term]);
@@ -157,24 +168,41 @@ class DcatRepository implements DcatRepositoryInterface
                     $distribution_uri = $dataset_uri . '.json';
                 }
 
-                $graph->addResource($dataset_uri, 'dcat:distribution', $distribution_uri);
-                $graph->addResource($distribution_uri, 'a', 'dcat:Distribution');
-                $graph->addResource($distribution_uri, 'dcat:accessURL', $dataset_uri);
-                $graph->addResource($distribution_uri, 'dcat:downloadURL', $distribution_uri);
-                $graph->addLiteral($distribution_uri, 'dct:title', $title);
-                $graph->addLiteral($distribution_uri, 'dct:description', 'A json feed of ' . $dataset_uri);
-                $graph->addLiteral($distribution_uri, 'dcat:mediaType', 'application/json');
-                $graph->addLiteral($distribution_uri, 'dct:issued', date(\DateTime::ISO8601, strtotime($definition['created_at'])));
+		$format_helper = new FormatHelper();
+		$formats = $format_helper->getFormatsForType($definition);
 
-		// Add the license to the distribution
-                if (!empty($definition['rights'])) {
-                    $license = $this->licenses->getByTitle($definition['rights']);
 
-                    if (!empty($license) && !empty($license['url'])) {
-                        $graph->addResource($distribution_uri, 'dct:license', $license['url']);
-                        $graph->addResource($license['url'], 'a', 'dct:LicenseDocument');
-                    }
-                }
+//                \Log::warning("The formats are " . var_dump($formats));
+
+		foreach ($formats as $format_key => $format_value) {
+
+			$media_type = "application";
+
+			if ($format_value == 'csv') {
+				$media_type = "text";
+			}
+
+			$distribution_uri = $dataset_uri. '.' . $format_value;
+
+                	$graph->addResource($dataset_uri, 'dcat:distribution', $distribution_uri);
+                	$graph->addResource($distribution_uri, 'a', 'dcat:Distribution');
+                	$graph->addResource($distribution_uri, 'dcat:accessURL', $dataset_uri);
+                	$graph->addResource($distribution_uri, 'dcat:downloadURL', $distribution_uri);
+                	$graph->addLiteral($distribution_uri, 'dct:title', $title);
+                	$graph->addLiteral($distribution_uri, 'dct:description', 'A ' . $format_value . ' feed of ' . $dataset_uri);
+                	$graph->addLiteral($distribution_uri, 'dcat:mediaType', $media_type . '/' . $format_value);
+                	$graph->addLiteral($distribution_uri, 'dct:issued', date(\DateTime::ISO8601, strtotime($definition['created_at'])));
+
+			// Add the license to the distribution
+                	if (!empty($definition['rights'])) {
+                    		$license = $this->licenses->getByTitle($definition['rights']);
+
+                    		if (!empty($license) && !empty($license['url'])) {
+                        		$graph->addResource($distribution_uri, 'dct:license', $license['url']);
+                        		$graph->addResource($license['url'], 'a', 'dct:LicenseDocument');
+                    		}
+                	}
+		}
             }
         }
 
@@ -202,6 +230,17 @@ class DcatRepository implements DcatRepositoryInterface
         $created_at = \DB::table('users')->min('created_at');
 
         return date(\DateTime::ISO8601, strtotime($created_at));
+    }
+
+    /**
+     * Return the typed literal
+     *
+     * @return datetime object
+     */
+    private function DT($value)
+    {
+
+        return new \DateTime($value);
     }
 
     /**

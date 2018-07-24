@@ -11,8 +11,6 @@ namespace Tdt\Core\Formatters;
  */
 class FormatHelper
 {
-    private static $tabular_sources = array('csv', 'xls', 'shp');
-
     /**
      * Return a list of the available formats that the data structure can be formatted into
      *
@@ -21,22 +19,130 @@ class FormatHelper
      */
     public function getAvailableFormats($data)
     {
-        $formats = array(
-        );
+        return $this->getFormatsForType($data->source_definition);
+    }
 
-        $source_type = $data->source_definition['type'];
+    /**
+     * Get the available formats based on the type of data source
+     * This can differ from the actual available formats (e.g. a SPARQL query can return a results
+     * from a construct or a select query, which can or can not be - respectively - be formatted in semantic formats)
+     *
+     * @param array $source_definition
+     *
+     * @return array
+     */
+    public function getFormatsForType($source_definition)
+    {
 
-        if (strtolower($source_type) != 'xml') {
-            $formats['JSON'] = 'json';
-        } else {
-            $formats['XML'] = 'xml';
-        }
+//        \Log::warning("The source definition is" . var_dump($source_definition));
 
-        // Check for tabular sources
-        if (in_array(strtolower($source_type), self::$tabular_sources)) {
-            $formats['CSV'] = 'csv';
-        }
+        $formats = [];
 
+        $source_type = strtolower($source_definition['type']);
+
+        switch ($source_type) {
+            case 'xml':
+                if ($source_definition['geo_formatted']) {
+                    $formats['Map'] = 'map';
+                    $formats['KML'] = 'kml';
+                    $formats['GeoJSON'] = 'geojson';
+                    $formats['WKT'] = 'WKT';
+                } else {
+                    $formats['XML'] = 'xml';
+                }
+                break;
+            case 'kml':
+                $formats['Map'] = 'map';
+                $formats['KML'] = 'kml';
+                $formats['GeoJSON'] = 'geojson';
+                $formats['WKT'] = 'WKT';
+                break;
+            case 'json':
+                if ($source_definition['jsontype'] == 'GeoJSON') {
+                    $formats['Map'] = 'map';
+                    $formats['GeoJSON'] = 'geojson';
+                } elseif ($source_definition['jsontype'] == 'JSON-LD') {
+                    $formats['JSON-LD'] = 'jsonld';
+                } else {
+                    $formats['JSON'] = 'json';
+                }
+                break;
+            case 'shp':
+                $formats['Map'] = 'map';
+                $formats['GeoJSON'] = 'geojson';
+                $formats['KML'] = ' ';
+                $formats['WKT'] = 'WKT';
+                $formats['CSV'] = 'csv';
+                break;
+            case 'mongo':
+                $formats['JSON'] = 'json';
+                break;
+            case 'elasticsearch':
+                $formats['JSON'] = 'json';
+                break;
+            case 'rdf':
+                break;
+            case 'sparql':
+                $formats['JSON'] = 'json';
+
+                $query_type = 'construct';
+                $sourcequery = trim($source_definition['query']);
+                $firstconstruct = stristr($sourcequery,"CONSTRUCT");
+                $firstselect    = stristr($sourcequery,"SELECT");
+
+		$constructl = strlen($firstconstruct) ;
+		$selectl = strlen($firstselect) ;
+//        	\Log::warning("The sparql definition is" . var_dump($firstconstruct));
+// V       	\Log::warning("The sparql definition is" . var_dump($firstselect));
+//        	\Log::warning("The sparql definition is" . var_dump($constructl));
+//        	\Log::warning("The sparql definition is" . var_dump($selectl));
+              
+	        if ($selectl > $constructl) {
+                    $formats['CSV'] = 'csv';
+                    $formats['JSON'] = 'json';
+ 
+		} else {
+
+                    $formats['NT'] = 'nt';
+                    $formats['TTL'] = 'ttl';
+                    $formats['RDF'] = 'xml';
+                    $formats['JSON-LD'] = 'jsonld';
+ 
+		}
+//
+//                if ($source_definition['query_type'] == 'construct') {
+//                    $formats['NT'] = 'ntriples';
+//                    $formats['TTL'] = 'Turtle';
+//                    $formats['RDF'] = 'RDF';
+//                    $formats['JSON-LD'] = 'JSON-LD';
+//                } elseif ($source_definition['query_type'] == 'select') {
+//                    $formats['CSV'] = 'CSV';
+//                    $formats['JSON'] = 'JSON';
+//                }
+                break;
+            case 'xls':
+                $formats['JSON'] = 'json';
+                $formats['CSV'] = 'csv';
+                break;
+            case 'mysql':
+                $formats['JSON'] = 'json';
+                $formats['CSV'] = 'csv';
+                break;
+            case 'csv':
+                $formats['JSON'] = 'json';
+                $formats['CSV'] = 'csv';
+                break;
+            case 'intertourist':
+            case 'productcategory':
+            case 'installed':
+                $formats['JSON'] = 'json';
+                $formats['CSV'] = 'csv';
+                $formats['XML'] = 'xml';
+                $formats['PHP'] = 'php';
+                break;
+        };
+
+	
         // Check for geographical properties
         if (!empty($data->geo)) {
             $formats = array_merge(array('Fullscreen' => 'map'), $formats);
@@ -54,17 +160,6 @@ class FormatHelper
                 $formats['GeoJSON'] = 'geojson';
                 unset($formats['JSON']);
             }
-        }
-
-        // Check for semantic sources, identified by the data being wrapped in an EasyRdf_Graph
-        if (is_object($data->data) && get_class($data->data) == 'EasyRdf_Graph') {
-            $formats['JSON-LD'] = 'jsonld';
-            $formats['N-Triples'] = 'nt';
-            $formats['Turtle'] = 'ttl';
-            $formats['RDF'] = 'xml';
-            unset($formats['XML']);
-        } else {
-            $formats['PHP'] = 'php';
         }
 
         return $formats;

@@ -3,15 +3,27 @@
     Options -MultiViews
     RewriteEngine On
 
-    # Redirect Trailing Slashes...
-    # RewriteRule ^(.*)/$ /$1 [L,R=301]
+    SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
+    SetEnvIf Authorization .+ HT_AUTHORIZATION=$0
 
-    RewriteRule ^snorql/index.html(.*)$ snorql/index.html$1 [L]
+    # Redirect Trailing Slashes...
+#    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    RewriteRule ^snorql/(.*)$ ext/snorql$1 [L]
 
     Options +FollowSymLinks
     RewriteRule ^feeds(.*) feeds$1 [L]
 
+#    RewriteRule ^ index.php [L]
+
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule ^.*$ index.php 
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},E=RR_AUH:%{HTTP_AUTHORIZATION,L]
+
+
 </IfModule>
+<IfModule mod_php5.c>
+    php_value memory_limit 1024M
+</IfModule>
+

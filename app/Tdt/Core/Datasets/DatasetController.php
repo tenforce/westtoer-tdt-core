@@ -31,10 +31,16 @@ class DatasetController extends ApiController
     public function get($uri)
     {
         // Check permissions
+//		$debugallheaders=getallheaders(); 
+		\Log::warning("Get DatasetController");
+//		\Log::warning($uri);
+//		\Log::warning($debugallheaders);
+
         Auth::requirePermissions('dataset.view');
 
         // Split for an (optional) extension
         list($uri, $extension) = $this->processURI($uri);
+
 
         $this->authenticate($uri);
 
@@ -94,8 +100,13 @@ class DatasetController extends ApiController
                     $data = $data_controller->readData($source_definition, $rest_parameters);
 
                     // If the source type is XML, just return the XML contents, don't transform
-                    if (strtolower($source_type) == 'xml' && $extension == 'xml') {
-                        return $this->createXMLResponse($data->data);
+# Bert change
+#                    if (strtolower($source_type) == 'xml' && $extension == 'xml') {
+#                        return $this->createXMLResponse($data->data);
+#                    }
+
+                    if (strtolower($source_type) == 'xml' && ( $extension == 'xml' || is_null($extension) ) ) {
+                        $extension = 'xml';
                     }
 
                     $data->rest_parameters = $rest_parameters;
@@ -218,6 +229,8 @@ class DatasetController extends ApiController
      */
     public function head($uri)
     {
+		\Log::warning("head DatasetController");
+		\Log::warning($uri);
         // Check permissions
         Auth::requirePermissions('dataset.view');
 
@@ -247,6 +260,8 @@ class DatasetController extends ApiController
      */
     private function processURI($uri)
     {
+		\Log::warning("processURI DatasetController");
+		\Log::warning($uri);
         $dot_position = strrpos($uri, '.');
 
         if (!$dot_position) {
@@ -402,6 +417,15 @@ class DatasetController extends ApiController
      */
     private function authenticate($uri)
     {
+
+		$debugallheaders=getallheaders(); 
+		\Log::warning("Authenticate DatasetController");
+		\Log::warning($uri);
+		\Log::warning($debugallheaders);
+
+//            \App::abort(401, $debugallheaders);
+
+
         $uri_pieces = explode('/', $uri);
 
         $prefix = array_shift($uri_pieces);
@@ -410,7 +434,8 @@ class DatasetController extends ApiController
             return;
         }
 
-        Auth::requirePermissions('datahub.view');
+       return;
+//        Auth::requirePermissions('datahub.view');
      }	
 
     /**	

@@ -54,10 +54,10 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => 'database',
 			'database'  => 'dhub_tdt',
 			'username'  => 'dhub_tdt',
-			'password'  => '',
+			'password'  => 'WestAccTdt',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
